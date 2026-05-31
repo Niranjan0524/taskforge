@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Niranjan0524/taskforge/server/internals/handlers"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,6 +23,11 @@ func main() {
 			"ClientIp": ctx.ClientIP(),
 		})
 	})
+
+	authorized := router.Group("/", handlers.ValidateUser())
+
+	authorized.POST("/api/task", handlers.CreateTask())
+	authorized.GET("/api/task/:id", handlers.GetTask())
 
 	if err := router.Run(); err != nil {
 		log.Fatalf("failed to run server: %v", err)
