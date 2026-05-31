@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/Niranjan0524/taskforge/server/internals/Storage/redisStore"
 	"github.com/Niranjan0524/taskforge/server/internals/handlers"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
@@ -30,6 +31,7 @@ func main() {
 		Password: "",
 		DB:       0,
 	})
+	store := redisStore.NewRedisStore(rdb)
 
 	if err := rdb.Ping(ctx).Err(); err != nil {
 		log.Fatal("Failed to connect to redis", err)
@@ -46,8 +48,8 @@ func main() {
 
 	authorized := router.Group("/", handlers.ValidateUser())
 
-	authorized.POST("/api/task", handlers.CreateTask(rdb))
-	authorized.GET("/api/task/:id", handlers.GetTask(rdb))
+	authorized.POST("/api/task", handlers.CreateTask(store))
+	authorized.GET("/api/task/:id", handlers.GetTask(store))
 
 	if err := router.Run(); err != nil {
 		log.Fatalf("failed to run server: %v", err)

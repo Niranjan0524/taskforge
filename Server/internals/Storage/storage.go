@@ -18,6 +18,7 @@ type Task struct {
 	CompletedAt *time.Time             `json:"completed_at"`
 }
 
-type storage interface {
+type Storage interface {
 	CreateTask(ctx context.Context, task Task) error
+	GetTask(ctx context.Context, userId string) (error, Task)
 }

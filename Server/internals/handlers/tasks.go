@@ -6,15 +6,12 @@ import (
 	"time"
 
 	storage "github.com/Niranjan0524/taskforge/server/internals/Storage"
-	redisStore "github.com/Niranjan0524/taskforge/server/internals/Storage/redisStore"
 	"github.com/Niranjan0524/taskforge/server/internals/types"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/redis/go-redis/v9"
 )
 
-func CreateTask(redis *redis.Client) gin.HandlerFunc {
-	store := redisStore.NewRedisStore(redis)
+func CreateTask(store storage.Storage) gin.HandlerFunc {
 
 	return func(ctx *gin.Context) {
 		fmt.Println("Creates task")
@@ -57,9 +54,22 @@ func CreateTask(redis *redis.Client) gin.HandlerFunc {
 	}
 }
 
-func GetTask(redis *redis.Client) gin.HandlerFunc {
+func GetTask(store storage.Storage) gin.HandlerFunc {
+
 	return func(ctx *gin.Context) {
 		userId := ctx.Param("id")
 		fmt.Println("userId", userId)
+
+		taskErr, task := store.GetTask(ctx.Request.Context(), userId)
+
+		if taskErr != nil {
+			ctx.JSON(http.StatusNotFound, gin.H{
+				"error": "task not found",
+			})
+			return
+		}
+		fmt.Println("Task", task)
+
+		ctx.JSON(http.StatusOK, task)
 	}
 }

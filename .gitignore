@@ -1,0 +1,51 @@
+
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+
+# Go
+bin/
+*.exe
+*.test
+*.out
+coverage.out
+.gocache/
+
+# Go workspace/vendor if generated
+go.work
+vendor/
+
+# Node / frontend
+node_modules/
+dist/
+build/
+.vite/
+.next/
+coverage/
+
+# Docker / local volumes
+*.pid
+*.log
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Redis/local data dumps
+dump.rdb
+appendonly.aof
+appendonlydir/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
