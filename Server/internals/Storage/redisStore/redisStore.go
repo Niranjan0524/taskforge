@@ -67,3 +67,52 @@ func (r *redisStruct) GetTask(ctx context.Context, userId string) (error, storag
 
 	return nil, task
 }
+
+func (r *redisStruct) GetAllTasks(ctx context.Context) ([]storage.Task, error) {
+	var cursor uint64
+	var tasks []storage.Task
+
+	for {
+		keys, nextCursor, err := r.Client.Scan(ctx, cursor, "task:*", 100).Result()
+		if err != nil {
+			return nil, err
+		}
+
+		for _, key := range keys {
+			taskJSON, err := r.Client.Get(ctx, key).Result()
+			if err != nil {
+				return nil, err
+			}
+
+			var task storage.Task
+			if err := json.Unmarshal([]byte(taskJSON), &task); err != nil {
+				return nil, err
+			}
+
+			tasks = append(tasks, task)
+		}
+
+		cursor = nextCursor
+		if cursor == 0 {
+			break
+		}
+	}
+
+	return tasks, nil
+}
+
+func (r *redisStruct) DeleteTask(ctx context.Context, taskID string) error {
+
+	if taskID == "" {
+		return errors.New("invalid task key")
+	}
+	taskKey := "task:" + taskID
+	pipe := r.Client.TxPipeline()
+
+	pipe.Del(ctx, taskKey)
+	pipe.SRem(ctx, "tasks:pending", taskID)
+	pipe.LRem(ctx, "queue:tasks", 0, taskID)
+
+	_, err := pipe.Exec(ctx)
+	return err
+}

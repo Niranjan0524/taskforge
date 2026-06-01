@@ -50,6 +50,8 @@ func main() {
 
 	authorized.POST("/api/task", handlers.CreateTask(store))
 	authorized.GET("/api/task/:id", handlers.GetTask(store))
+	authorized.GET("/api/tasks", handlers.GetAllTasks(store))
+	authorized.DELETE("/api/tasks/:id", handlers.DeleteTask(store))
 
 	if err := router.Run(); err != nil {
 		log.Fatalf("failed to run server: %v", err)

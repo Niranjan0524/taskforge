@@ -73,3 +73,35 @@ func GetTask(store storage.Storage) gin.HandlerFunc {
 		ctx.JSON(http.StatusOK, task)
 	}
 }
+
+func GetAllTasks(store storage.Storage) gin.HandlerFunc {
+
+	return func(ctx *gin.Context) {
+
+		allTasks, err := store.GetAllTasks(ctx.Request.Context())
+
+		if err != nil {
+			fmt.Println("Error in fetching all tasks", err)
+			ctx.JSON(http.StatusInternalServerError, err)
+		}
+
+		ctx.JSON(http.StatusOK, allTasks)
+	}
+}
+
+func DeleteTask(store storage.Storage) gin.HandlerFunc {
+
+	return func(ctx *gin.Context) {
+
+		taskId := ctx.Param("id")
+		err := store.DeleteTask(ctx.Request.Context(), taskId)
+
+		if err != nil {
+
+			fmt.Println("error deleting task", err)
+			ctx.JSON(http.StatusInternalServerError, err)
+		}
+
+		ctx.JSON(http.StatusOK, "Task Deleted Successfully")
+	}
+}
