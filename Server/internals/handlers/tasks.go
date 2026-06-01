@@ -89,6 +89,28 @@ func GetAllTasks(store storage.Storage) gin.HandlerFunc {
 	}
 }
 
+func GetTaskStatus(store storage.Storage) gin.HandlerFunc {
+
+	return func(ctx *gin.Context) {
+
+		taskId := ctx.Param("id")
+		status, err := store.GetTaskStatus(ctx.Request.Context(), taskId)
+
+		if err != nil {
+			fmt.Println("error fetching task status", err)
+			ctx.JSON(http.StatusNotFound, gin.H{
+				"error": "task not found",
+			})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"id":     taskId,
+			"status": status,
+		})
+	}
+}
+
 func DeleteTask(store storage.Storage) gin.HandlerFunc {
 
 	return func(ctx *gin.Context) {

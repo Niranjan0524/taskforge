@@ -68,6 +68,25 @@ func (r *redisStruct) GetTask(ctx context.Context, userId string) (error, storag
 	return nil, task
 }
 
+func (r *redisStruct) GetTaskStatus(ctx context.Context, taskID string) (string, error) {
+	if strings.TrimSpace(taskID) == "" {
+		return "", errors.New("no taskId found")
+	}
+
+	taskKey := "task:" + taskID
+	taskJSON, err := r.Client.Get(ctx, taskKey).Result()
+	if err != nil {
+		return "", err
+	}
+
+	var task storage.Task
+	if err := json.Unmarshal([]byte(taskJSON), &task); err != nil {
+		return "", err
+	}
+
+	return task.Status, nil
+}
+
 func (r *redisStruct) GetAllTasks(ctx context.Context) ([]storage.Task, error) {
 	var cursor uint64
 	var tasks []storage.Task

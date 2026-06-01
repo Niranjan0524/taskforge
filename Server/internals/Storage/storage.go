@@ -21,6 +21,7 @@ type Task struct {
 type Storage interface {
 	CreateTask(ctx context.Context, task Task) error
 	GetTask(ctx context.Context, userId string) (error, Task)
+	GetTaskStatus(ctx context.Context, taskId string) (string, error)
 	GetAllTasks(ctx context.Context) ([]Task, error)
 	DeleteTask(ctx context.Context, taskId string) error
 }

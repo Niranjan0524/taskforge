@@ -49,6 +49,7 @@ func main() {
 	authorized := router.Group("/", handlers.ValidateUser())
 
 	authorized.POST("/api/task", handlers.CreateTask(store))
+	authorized.GET("/api/task/:id/status", handlers.GetTaskStatus(store))
 	authorized.GET("/api/task/:id", handlers.GetTask(store))
 	authorized.GET("/api/tasks", handlers.GetAllTasks(store))
 	authorized.DELETE("/api/tasks/:id", handlers.DeleteTask(store))
