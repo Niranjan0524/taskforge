@@ -21,6 +21,14 @@ func NewRedisStore(client *redis.Client) *redisStruct {
 	}
 }
 
+func redisTaskKey(taskId string) string {
+	if strings.HasPrefix(taskId, "task:") {
+		return taskId
+	}
+
+	return "task:" + taskId
+}
+
 func (r *redisStruct) CreateTask(ctx context.Context, task storage.Task) error {
 
 	taskJSON, err := json.Marshal(task)
@@ -28,7 +36,7 @@ func (r *redisStruct) CreateTask(ctx context.Context, task storage.Task) error {
 		return err
 	}
 
-	taskKey := "task:" + task.ID
+	taskKey := redisTaskKey(task.ID)
 
 	//this pipe helps to run multiple redis commands together
 	pipe := r.Client.TxPipeline()
@@ -46,8 +54,8 @@ func (r *redisStruct) GetTask(ctx context.Context, taskId string) (error, storag
 	if strings.TrimSpace(taskId) == "" {
 		return errors.New("No userId found"), storage.Task{}
 	}
-
-	taskJSON, taskErr := r.Client.Get(ctx, taskId).Result()
+	fmt.Println("in side getTask")
+	taskJSON, taskErr := r.Client.Get(ctx, redisTaskKey(taskId)).Result()
 	if taskErr != nil {
 		return taskErr, storage.Task{}
 	}
@@ -70,7 +78,7 @@ func (r *redisStruct) GetTaskStatus(ctx context.Context, taskID string) (string,
 		return "", errors.New("no taskId found")
 	}
 
-	taskKey := "task:" + taskID
+	taskKey := redisTaskKey(taskID)
 	taskJSON, err := r.Client.Get(ctx, taskKey).Result()
 	if err != nil {
 		return "", err
@@ -122,7 +130,7 @@ func (r *redisStruct) DeleteTask(ctx context.Context, taskID string) error {
 	if taskID == "" {
 		return errors.New("invalid task key")
 	}
-	taskKey := "task:" + taskID
+	taskKey := redisTaskKey(taskID)
 	pipe := r.Client.TxPipeline()
 
 	pipe.Del(ctx, taskKey)
@@ -135,6 +143,7 @@ func (r *redisStruct) DeleteTask(ctx context.Context, taskID string) error {
 
 func (r *redisStruct) PopTask(ctx context.Context) (storage.Task, error) {
 
+	fmt.Println("waiting for task from queue:tasks")
 	result, err := r.Client.BRPop(ctx, 0, "queue:tasks").Result()
 
 	if err != nil {
@@ -143,10 +152,12 @@ func (r *redisStruct) PopTask(ctx context.Context) (storage.Task, error) {
 	}
 
 	taskId := result[1]
-
+	fmt.Println("popped task id:", taskId)
 	taskErr, task := r.GetTask(ctx, taskId)
 
+	fmt.Println("popped task: ", task)
 	if taskErr != nil {
+		fmt.Println("Error in popTask", taskErr)
 		return storage.Task{}, taskErr
 	}
 
@@ -160,7 +171,10 @@ func (r *redisStruct) UpdateTaskStatus(ctx context.Context, taskId string, statu
 		return errors.New("Insufficient Details")
 	}
 
-	taskJson, err := r.Client.Get(ctx, taskId).Result()
+	taskKey := redisTaskKey(taskId)
+	rawTaskId := strings.TrimPrefix(taskId, "task:")
+
+	taskJson, err := r.Client.Get(ctx, taskKey).Result()
 
 	if err != nil {
 		fmt.Println("Error in getting the task", err)
@@ -181,14 +195,14 @@ func (r *redisStruct) UpdateTaskStatus(ctx context.Context, taskId string, statu
 
 	pipe := r.Client.TxPipeline()
 
-	pipe.Set(ctx, taskId, updatedTask, 0)
+	pipe.Set(ctx, taskKey, updatedTask, 0)
 
-	pipe.SRem(ctx, "tasks:pending", taskId)
-	pipe.SRem(ctx, "tasks:running", taskId)
-	pipe.SRem(ctx, "tasks:completed", taskId)
-	pipe.SRem(ctx, "tasks:failed", taskId)
+	pipe.SRem(ctx, "tasks:pending", rawTaskId)
+	pipe.SRem(ctx, "tasks:running", rawTaskId)
+	pipe.SRem(ctx, "tasks:completed", rawTaskId)
+	pipe.SRem(ctx, "tasks:failed", rawTaskId)
 
-	pipe.SAdd(ctx, "tasks:"+status, taskId)
+	pipe.SAdd(ctx, "tasks:"+status, rawTaskId)
 
 	_, err = pipe.Exec(ctx)
 	return err
@@ -202,7 +216,7 @@ func (r *redisStruct) MarkTaskRunning(ctx context.Context, taskId string) error 
 		return errors.New("No TaskId Found")
 	}
 
-	err := r.UpdateTaskStatus(ctx, taskId, "Running")
+	err := r.UpdateTaskStatus(ctx, taskId, "running")
 
 	if err != nil {
 		return err
@@ -216,7 +230,7 @@ func (r *redisStruct) MarkTaskFailed(ctx context.Context, taskId string) error {
 		return errors.New("No TaskId Found")
 	}
 
-	err := r.UpdateTaskStatus(ctx, taskId, "Failed")
+	err := r.UpdateTaskStatus(ctx, taskId, "failed")
 
 	if err != nil {
 		return err
@@ -230,7 +244,7 @@ func (r *redisStruct) MarkTaskCompleted(ctx context.Context, taskId string) erro
 		return errors.New("No TaskId Found")
 	}
 
-	err := r.UpdateTaskStatus(ctx, taskId, "Completed")
+	err := r.UpdateTaskStatus(ctx, taskId, "completed")
 
 	if err != nil {
 		return err

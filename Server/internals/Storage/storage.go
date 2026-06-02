@@ -27,6 +27,6 @@ type Storage interface {
 	PopTask(ctx context.Context) (Task, error)
 	MarkTaskRunning(ctx context.Context, taskId string) error
 	MarkTaskCompleted(ctx context.Context, taskId string) error
-	MarkTaskFailed(ctx context.Context, taskId string, errMsg string) error
+	MarkTaskFailed(ctx context.Context, taskId string) error
 	UpdateTaskStatus(ctx context.Context, taskId string, status string) error
 }

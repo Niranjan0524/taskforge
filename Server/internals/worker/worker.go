@@ -38,8 +38,35 @@ func (p *WorkerPool) runWorker(ctx context.Context, workerID int) {
 			log.Println("worker stopped:", workerID)
 			return
 		default:
-			// later: pop task from Redis queue and execute it
-			fmt.Println("executing Tasks")
+			fmt.Println("before pop task")
+			task, err := p.store.PopTask(ctx)
+
+			fmt.Println("after pop task")
+			if err != nil {
+				if ctx.Err() != nil {
+					return
+				}
+
+				log.Println("error popping task:", err)
+				continue
+			}
+
+			if err := p.store.MarkTaskRunning(ctx, task.ID); err != nil {
+				log.Println("error marking task running:", err)
+				continue
+			}
+
+			if err := ExecuteTask(ctx, task); err != nil {
+				log.Println("error executing task:", err)
+				if markErr := p.store.MarkTaskFailed(ctx, task.ID); markErr != nil {
+					log.Println("error marking task failed:", markErr)
+				}
+				continue
+			}
+
+			if err := p.store.MarkTaskCompleted(ctx, task.ID); err != nil {
+				log.Println("error marking task completed:", err)
+			}
 		}
 	}
 }
