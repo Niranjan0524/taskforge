@@ -20,8 +20,13 @@ type Task struct {
 
 type Storage interface {
 	CreateTask(ctx context.Context, task Task) error
-	GetTask(ctx context.Context, userId string) (error, Task)
+	GetTask(ctx context.Context, taskId string) (error, Task)
 	GetTaskStatus(ctx context.Context, taskId string) (string, error)
 	GetAllTasks(ctx context.Context) ([]Task, error)
 	DeleteTask(ctx context.Context, taskId string) error
+	PopTask(ctx context.Context) (Task, error)
+	MarkTaskRunning(ctx context.Context, taskId string) error
+	MarkTaskCompleted(ctx context.Context, taskId string) error
+	MarkTaskFailed(ctx context.Context, taskId string, errMsg string) error
+	UpdateTaskStatus(ctx context.Context, taskId string, status string) error
 }

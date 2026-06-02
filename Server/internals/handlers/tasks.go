@@ -60,7 +60,8 @@ func GetTask(store storage.Storage) gin.HandlerFunc {
 		userId := ctx.Param("id")
 		fmt.Println("userId", userId)
 
-		taskErr, task := store.GetTask(ctx.Request.Context(), userId)
+		taskId := "tasks:" + userId
+		taskErr, task := store.GetTask(ctx.Request.Context(), taskId)
 
 		if taskErr != nil {
 			ctx.JSON(http.StatusNotFound, gin.H{

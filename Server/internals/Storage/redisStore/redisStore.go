@@ -41,14 +41,11 @@ func (r *redisStruct) CreateTask(ctx context.Context, task storage.Task) error {
 	return err
 }
 
-func (r *redisStruct) GetTask(ctx context.Context, userId string) (error, storage.Task) {
+func (r *redisStruct) GetTask(ctx context.Context, taskId string) (error, storage.Task) {
 
-	if strings.TrimSpace(userId) == "" {
+	if strings.TrimSpace(taskId) == "" {
 		return errors.New("No userId found"), storage.Task{}
 	}
-
-	taskId := "task:" + userId
-	fmt.Println("taskId", taskId)
 
 	taskJSON, taskErr := r.Client.Get(ctx, taskId).Result()
 	if taskErr != nil {
@@ -134,4 +131,109 @@ func (r *redisStruct) DeleteTask(ctx context.Context, taskID string) error {
 
 	_, err := pipe.Exec(ctx)
 	return err
+}
+
+func (r *redisStruct) PopTask(ctx context.Context) (storage.Task, error) {
+
+	result, err := r.Client.BRPop(ctx, 0, "queue:tasks").Result()
+
+	if err != nil {
+		fmt.Println("Error in popping task", err)
+		return storage.Task{}, err
+	}
+
+	taskId := result[1]
+
+	taskErr, task := r.GetTask(ctx, taskId)
+
+	if taskErr != nil {
+		return storage.Task{}, taskErr
+	}
+
+	return task, nil
+}
+
+func (r *redisStruct) UpdateTaskStatus(ctx context.Context, taskId string, status string) error {
+
+	if strings.TrimSpace(taskId) == "" || strings.TrimSpace(status) == "" {
+		fmt.Println("Insufficient Details", taskId)
+		return errors.New("Insufficient Details")
+	}
+
+	taskJson, err := r.Client.Get(ctx, taskId).Result()
+
+	if err != nil {
+		fmt.Println("Error in getting the task", err)
+		return err
+	}
+
+	var task storage.Task
+	if err := json.Unmarshal([]byte(taskJson), &task); err != nil {
+		return err
+	}
+	task.Status = status
+
+	updatedTask, err := json.Marshal(task)
+
+	if err != nil {
+		return err
+	}
+
+	pipe := r.Client.TxPipeline()
+
+	pipe.Set(ctx, taskId, updatedTask, 0)
+
+	pipe.SRem(ctx, "tasks:pending", taskId)
+	pipe.SRem(ctx, "tasks:running", taskId)
+	pipe.SRem(ctx, "tasks:completed", taskId)
+	pipe.SRem(ctx, "tasks:failed", taskId)
+
+	pipe.SAdd(ctx, "tasks:"+status, taskId)
+
+	_, err = pipe.Exec(ctx)
+	return err
+
+}
+
+func (r *redisStruct) MarkTaskRunning(ctx context.Context, taskId string) error {
+
+	if strings.TrimSpace(taskId) == "" {
+		fmt.Println("Empty tasksId", taskId)
+		return errors.New("No TaskId Found")
+	}
+
+	err := r.UpdateTaskStatus(ctx, taskId, "Running")
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (r *redisStruct) MarkTaskFailed(ctx context.Context, taskId string) error {
+
+	if strings.TrimSpace(taskId) == "" {
+		fmt.Println("Empty tasksId", taskId)
+		return errors.New("No TaskId Found")
+	}
+
+	err := r.UpdateTaskStatus(ctx, taskId, "Failed")
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (r *redisStruct) MarkTaskCompleted(ctx context.Context, taskId string) error {
+
+	if strings.TrimSpace(taskId) == "" {
+		fmt.Println("Empty tasksId", taskId)
+		return errors.New("No TaskId Found")
+	}
+
+	err := r.UpdateTaskStatus(ctx, taskId, "Completed")
+
+	if err != nil {
+		return err
+	}
+	return nil
 }
