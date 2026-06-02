@@ -2,7 +2,6 @@ package worker
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	storage "github.com/Niranjan0524/taskforge/server/internals/Storage"
@@ -38,10 +37,9 @@ func (p *WorkerPool) runWorker(ctx context.Context, workerID int) {
 			log.Println("worker stopped:", workerID)
 			return
 		default:
-			fmt.Println("before pop task")
+
 			task, err := p.store.PopTask(ctx)
 
-			fmt.Println("after pop task")
 			if err != nil {
 				if ctx.Err() != nil {
 					return

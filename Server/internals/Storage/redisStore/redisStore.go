@@ -54,18 +54,16 @@ func (r *redisStruct) GetTask(ctx context.Context, taskId string) (error, storag
 	if strings.TrimSpace(taskId) == "" {
 		return errors.New("No userId found"), storage.Task{}
 	}
-	fmt.Println("in side getTask")
+
 	taskJSON, taskErr := r.Client.Get(ctx, redisTaskKey(taskId)).Result()
 	if taskErr != nil {
 		return taskErr, storage.Task{}
 	}
 
-	fmt.Println("Task from redis", taskJSON)
 	var task storage.Task
 
 	err := json.Unmarshal([]byte(taskJSON), &task)
 
-	fmt.Println("task after conv to json:", task)
 	if err != nil {
 		return err, storage.Task{}
 	}
