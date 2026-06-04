@@ -1,22 +1,26 @@
 .app-shell {
-  --surface: rgba(21, 25, 23, 0.82);
-  --surface-strong: rgba(28, 33, 31, 0.94);
-  --line: rgba(218, 232, 221, 0.13);
-  --line-strong: rgba(218, 232, 221, 0.22);
-  --text-soft: rgba(238, 244, 239, 0.72);
-  --text-muted: rgba(238, 244, 239, 0.52);
-  --mint: #b8f3d0;
-  --mint-strong: #72d69c;
-  --amber: #e8c26a;
-  --ink: #090c0b;
+  --surface: rgba(252, 248, 216, 0.74);
+  --surface-strong: rgba(217, 218, 223, 0.9);
+  --line: rgba(124, 125, 117, 0.22);
+  --line-strong: rgba(124, 125, 117, 0.38);
+  --text-soft: rgba(28, 29, 25, 0.74);
+  --text-muted: rgba(28, 29, 25, 0.52);
+  --mint: #dd700b;
+  --mint-strong: #a95508;
+  --amber: #7c7d75;
+  --ink: #191a16;
+  --cream: #fcf8d8;
+  --fog: #adaca7;
+  --mist: #d9dadf;
+  --olive: #7c7d75;
 
   min-height: 100vh;
   padding: 28px;
   background:
-    linear-gradient(135deg, rgba(184, 243, 208, 0.12), transparent 34%),
-    radial-gradient(circle at 86% 18%, rgba(232, 194, 106, 0.15), transparent 30%),
-    #0b0f0e;
-  color: #eef4ef;
+    linear-gradient(135deg, rgba(252, 248, 216, 0.9), transparent 36%),
+    radial-gradient(circle at 86% 18%, rgba(221, 112, 11, 0.18), transparent 28%),
+    linear-gradient(180deg, #d9dadf 0%, #adaca7 100%);
+  color: var(--ink);
 }
 
 .topbar,
@@ -194,9 +198,9 @@ h1 {
 }
 
 .button-primary {
-  border: 1px solid rgba(184, 243, 208, 0.62);
+  border: 1px solid rgba(221, 112, 11, 0.55);
   background: var(--mint);
-  color: var(--ink);
+  color: var(--cream);
 }
 
 .button-secondary {
@@ -231,7 +235,7 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  border: 1px solid rgba(184, 243, 208, 0.3);
+  border: 1px solid rgba(221, 112, 11, 0.3);
   border-radius: 999px;
   color: var(--mint);
   padding: 5px 9px;
@@ -257,8 +261,8 @@ h1 {
 }
 
 .task-card.active {
-  border-color: rgba(184, 243, 208, 0.36);
-  background: rgba(184, 243, 208, 0.08);
+  border-color: rgba(221, 112, 11, 0.34);
+  background: rgba(252, 248, 216, 0.58);
 }
 
 .task-card p,
@@ -373,12 +377,12 @@ h1 {
 }
 
 .action-card:hover {
-  border-color: rgba(184, 243, 208, 0.36);
+  border-color: rgba(221, 112, 11, 0.42);
   background: var(--surface-strong);
 }
 
 .action-card.featured {
-  border-color: rgba(184, 243, 208, 0.35);
+  border-color: rgba(221, 112, 11, 0.35);
 }
 
 .action-icon {
@@ -387,7 +391,7 @@ h1 {
   height: 42px;
   place-items: center;
   border-radius: 8px;
-  background: rgba(184, 243, 208, 0.11);
+  background: rgba(252, 248, 216, 0.68);
   color: var(--mint);
 }
 
@@ -582,8 +586,8 @@ h1 {
   width: 100%;
   border: 1px solid var(--line-strong);
   border-radius: 8px;
-  background: rgba(9, 12, 11, 0.72);
-  color: #ffffff;
+  background: rgba(252, 248, 216, 0.5);
+  color: var(--ink);
   font: inherit;
   font-size: 13px;
   line-height: 1.5;
@@ -606,8 +610,8 @@ h1 {
 .field-group input:focus,
 .field-group select:focus,
 .field-group textarea:focus {
-  border-color: rgba(184, 243, 208, 0.58);
-  box-shadow: 0 0 0 3px rgba(184, 243, 208, 0.08);
+  border-color: rgba(221, 112, 11, 0.58);
+  box-shadow: 0 0 0 3px rgba(221, 112, 11, 0.1);
 }
 
 .json-status {
@@ -615,7 +619,7 @@ h1 {
   align-items: center;
   gap: 9px;
   width: fit-content;
-  border: 1px solid rgba(184, 243, 208, 0.24);
+  border: 1px solid rgba(221, 112, 11, 0.28);
   border-radius: 999px;
   color: var(--mint);
   font-size: 12px;
@@ -624,7 +628,7 @@ h1 {
 
 .json-status.error {
   border-color: rgba(232, 103, 103, 0.38);
-  color: #ff9f9f;
+  color: #b3481b;
 }
 
 .form-actions {
@@ -684,12 +688,12 @@ h1 {
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgba(6, 8, 8, 0.88);
+  background: rgba(25, 26, 22, 0.92);
 }
 
 .created-task-card {
-  border-color: rgba(184, 243, 208, 0.28);
-  background: rgba(184, 243, 208, 0.065);
+  border-color: rgba(221, 112, 11, 0.34);
+  background: rgba(252, 248, 216, 0.58);
 }
 
 .code-card-header {
@@ -715,7 +719,7 @@ h1 {
   max-height: 420px;
   overflow: auto;
   margin: 0;
-  color: #dff7e8;
+  color: var(--cream);
   font-size: 12px;
   line-height: 1.65;
   padding: 16px;
@@ -768,8 +772,8 @@ h1 {
 
 .icon-button:hover,
 .icon-text-button:hover {
-  border-color: rgba(184, 243, 208, 0.36);
-  background: rgba(184, 243, 208, 0.08);
+  border-color: rgba(221, 112, 11, 0.42);
+  background: rgba(252, 248, 216, 0.76);
 }
 
 .icon-button:disabled,
@@ -779,7 +783,7 @@ h1 {
 }
 
 .icon-button.danger {
-  color: #ffb0a8;
+  color: #b3481b;
 }
 
 .task-table-wrap {
@@ -792,7 +796,7 @@ h1 {
   width: 100%;
   min-width: 820px;
   border-collapse: collapse;
-  background: rgba(6, 8, 8, 0.28);
+  background: rgba(252, 248, 216, 0.34);
   font-size: 12px;
 }
 
@@ -853,23 +857,23 @@ h1 {
 }
 
 .status-badge.pending {
-  border-color: rgba(232, 194, 106, 0.32);
-  color: var(--amber);
+  border-color: rgba(221, 112, 11, 0.35);
+  color: var(--mint);
 }
 
 .status-badge.running {
   border-color: rgba(112, 191, 255, 0.32);
-  color: #9cd4ff;
+  color: var(--olive);
 }
 
 .status-badge.completed {
-  border-color: rgba(184, 243, 208, 0.32);
-  color: var(--mint);
+  border-color: rgba(124, 125, 117, 0.42);
+  color: #4c5b42;
 }
 
 .status-badge.failed {
   border-color: rgba(255, 159, 159, 0.36);
-  color: #ff9f9f;
+  color: #b3481b;
 }
 
 .table-actions {
@@ -909,7 +913,7 @@ h1 {
 }
 
 .error-state svg {
-  color: #ff9f9f;
+  color: #b3481b;
 }
 
 .compact-button {
@@ -923,9 +927,142 @@ h1 {
 
 .task-detail-panel {
   overflow: hidden;
-  border: 1px solid rgba(184, 243, 208, 0.24);
+  border: 1px solid rgba(221, 112, 11, 0.34);
   border-radius: 8px;
-  background: rgba(184, 243, 208, 0.055);
+  background: rgba(252, 248, 216, 0.58);
+}
+
+.app-shell .brand,
+.app-shell h1,
+.app-shell h2,
+.app-shell h3,
+.app-shell .button-secondary,
+.app-shell .task-card p,
+.app-shell .stat-item span,
+.app-shell .action-card,
+.app-shell .workflow-section h2,
+.app-shell .workflow-item h3,
+.app-shell .form-section-header h2,
+.app-shell .preview-summary strong,
+.app-shell .task-table td strong,
+.app-shell .state-panel strong,
+.app-shell .icon-text-button,
+.app-shell .icon-button {
+  color: var(--ink);
+}
+
+.app-shell .brand-mark,
+.app-shell .action-icon {
+  border-color: rgba(124, 125, 117, 0.32);
+  background: rgba(252, 248, 216, 0.68);
+  color: var(--mint);
+}
+
+.app-shell .nav-links a:hover,
+.app-shell .eyebrow,
+.app-shell .task-card,
+.app-shell .stats-row,
+.app-shell .workflow-item,
+.app-shell .preview-summary div,
+.app-shell .state-panel {
+  background: rgba(252, 248, 216, 0.42);
+}
+
+.app-shell .button-primary {
+  border-color: rgba(221, 112, 11, 0.55);
+  background: var(--mint);
+  color: var(--cream);
+}
+
+.app-shell .button-secondary,
+.app-shell .icon-text-button,
+.app-shell .icon-button {
+  border-color: rgba(124, 125, 117, 0.36);
+  background: rgba(217, 218, 223, 0.54);
+}
+
+.app-shell .console-panel,
+.app-shell .task-form,
+.app-shell .preview-panel,
+.app-shell .dashboard-panel {
+  background:
+    linear-gradient(180deg, rgba(252, 248, 216, 0.5), transparent),
+    rgba(217, 218, 223, 0.72);
+  box-shadow: 0 24px 90px rgba(42, 42, 37, 0.16);
+}
+
+.app-shell .action-card {
+  background: rgba(252, 248, 216, 0.56);
+}
+
+.app-shell .action-card:hover,
+.app-shell .icon-button:hover,
+.app-shell .icon-text-button:hover {
+  border-color: rgba(221, 112, 11, 0.42);
+  background: rgba(252, 248, 216, 0.76);
+}
+
+.app-shell .task-card.active,
+.app-shell .created-task-card,
+.app-shell .task-detail-panel {
+  border-color: rgba(221, 112, 11, 0.34);
+  background: rgba(252, 248, 216, 0.58);
+}
+
+.app-shell .field-group input,
+.app-shell .field-group select,
+.app-shell .field-group textarea {
+  background: rgba(252, 248, 216, 0.5);
+  color: var(--ink);
+}
+
+.app-shell .field-group input:focus,
+.app-shell .field-group select:focus,
+.app-shell .field-group textarea:focus {
+  border-color: rgba(221, 112, 11, 0.58);
+  box-shadow: 0 0 0 3px rgba(221, 112, 11, 0.1);
+}
+
+.app-shell .code-card,
+.app-shell .created-task-card,
+.app-shell .task-detail-panel {
+  background: rgba(25, 26, 22, 0.92);
+}
+
+.app-shell .code-card pre,
+.app-shell .created-task-card pre,
+.app-shell .task-detail-panel pre {
+  color: var(--cream);
+}
+
+.app-shell .task-table {
+  background: rgba(252, 248, 216, 0.34);
+}
+
+.app-shell .task-table tbody tr:hover {
+  background: rgba(252, 248, 216, 0.5);
+}
+
+.app-shell .status-badge.pending {
+  border-color: rgba(221, 112, 11, 0.35);
+  color: var(--mint);
+}
+
+.app-shell .status-badge.running {
+  border-color: rgba(124, 125, 117, 0.38);
+  color: var(--olive);
+}
+
+.app-shell .status-badge.completed {
+  border-color: rgba(124, 125, 117, 0.42);
+  color: #4c5b42;
+}
+
+.app-shell .status-badge.failed,
+.app-shell .json-status.error,
+.app-shell .error-state svg,
+.app-shell .icon-button.danger {
+  color: #b3481b;
 }
 
 @keyframes spin {
