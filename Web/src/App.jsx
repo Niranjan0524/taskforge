@@ -2,6 +2,7 @@ import './App.css'
 import { useEffect, useState } from 'react'
 import { Toaster } from 'react-hot-toast'
 import CreateTaskPage from '@/pages/CreateTaskPage'
+import DashboardPage from '@/pages/DashboardPage'
 import HomePage from '@/pages/HomePage'
 
 function getRouteFromHash() {
@@ -19,7 +20,13 @@ function App() {
     return () => window.removeEventListener('hashchange', handleHashChange)
   }, [])
 
-  const page = route === 'create-task' ? <CreateTaskPage /> : <HomePage />
+  const pages = {
+    dashboard: <DashboardPage />,
+    'create-task': <CreateTaskPage />,
+    home: <HomePage />,
+  }
+
+  const page = pages[route] || <HomePage />
 
   return (
     <main className="min-h-screen overflow-hidden bg-background text-foreground">
