@@ -34,11 +34,6 @@ const actions = [
   },
 ]
 
-const stats = [
-  { label: 'Queue states', value: '4', detail: 'pending to failed' },
-  { label: 'Worker pool', value: '3', detail: 'parallel executors' },
-  { label: 'Default retries', value: '3', detail: 'per task fallback' },
-]
 
 const workflow = [
   {
@@ -135,15 +130,7 @@ function HomePage() {
         </aside>
       </div>
 
-      <section className="stats-row" aria-label="Platform summary">
-        {stats.map((stat) => (
-          <div className="stat-item" key={stat.label}>
-            <strong>{stat.value}</strong>
-            <span>{stat.label}</span>
-            <p>{stat.detail}</p>
-          </div>
-        ))}
-      </section>
+    
 
       <section className="action-grid" aria-label="Primary actions">
         {actions.map((action) => {

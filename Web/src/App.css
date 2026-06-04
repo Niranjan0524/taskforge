@@ -661,12 +661,18 @@ h1 {
   font-size: 14px;
 }
 
-.code-card {
+.code-card,
+.created-task-card {
   margin-top: 16px;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(6, 8, 8, 0.88);
+}
+
+.created-task-card {
+  border-color: rgba(184, 243, 208, 0.28);
+  background: rgba(184, 243, 208, 0.065);
 }
 
 .code-card-header {
@@ -681,7 +687,13 @@ h1 {
   text-transform: uppercase;
 }
 
-.code-card pre {
+.code-card-header strong {
+  color: var(--mint);
+  font-size: 12px;
+}
+
+.code-card pre,
+.created-task-card pre {
   max-height: 420px;
   overflow: auto;
   margin: 0;

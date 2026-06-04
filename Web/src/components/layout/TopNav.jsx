@@ -12,8 +12,7 @@ function TopNav() {
 
       <div className="nav-links">
         <a href="#dashboard">Dashboard</a>
-        <a href="#create-task">Create</a>
-        <a href="#status">Status</a>
+        <a href="#create-task">Create Task</a>
       </div>
     </nav>
   )

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
 import {
   ArrowLeft,
   Braces,
@@ -11,6 +12,7 @@ import {
   RotateCcw,
   Send,
 } from 'lucide-react'
+import { createTask } from '@/api/tasks'
 import TopNav from '@/components/layout/TopNav'
 
 const payloadTemplates = {
@@ -41,6 +43,8 @@ function CreateTaskPage() {
   const [priority, setPriority] = useState(5)
   const [maxRetries, setMaxRetries] = useState(3)
   const [payload, setPayload] = useState(formatJson(payloadTemplates.send_email))
+  const [createdTask, setCreatedTask] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const parsedPayload = useMemo(() => {
     try {
@@ -71,10 +75,36 @@ function CreateTaskPage() {
 
     setTaskType(nextType)
     setPayload(formatJson(payloadTemplates[nextType]))
+    setCreatedTask(null)
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
+
+    if (parsedPayload.error) {
+      toast.error('Fix the payload JSON before submitting.')
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const result = await toast.promise(createTask(taskPreview), {
+        loading: 'Creating task...',
+        success: ({ taskDetails }) => {
+          const shortId = taskDetails?.id ? taskDetails.id.slice(0, 8) : 'created'
+
+          return `Task ${shortId} queued.`
+        },
+        error: (error) => error.message || 'Could not create task.',
+      })
+
+      setCreatedTask(result)
+    } catch {
+      setCreatedTask(null)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const resetForm = () => {
@@ -82,6 +112,7 @@ function CreateTaskPage() {
     setPriority(5)
     setMaxRetries(3)
     setPayload(formatJson(payloadTemplates.send_email))
+    setCreatedTask(null)
   }
 
   return (
@@ -100,7 +131,7 @@ function CreateTaskPage() {
         <h1>Shape a task before it enters the queue.</h1>
         <p>
           Configure the task type, priority, retry policy, and JSON payload.
-          The submit button is UI-only for now, so the API can be wired in cleanly later.
+          Submitting this form sends the request body to the backend create-task endpoint.
         </p>
       </div>
 
@@ -166,8 +197,12 @@ function CreateTaskPage() {
               Reset
               <RotateCcw size={17} />
             </button>
-            <button className="button button-primary" type="submit" disabled={Boolean(parsedPayload.error)}>
-              Submit Task
+            <button
+              className="button button-primary"
+              type="submit"
+              disabled={Boolean(parsedPayload.error) || isSubmitting}
+            >
+              {isSubmitting ? 'Creating...' : 'Submit Task'}
               <Send size={17} />
             </button>
           </div>
@@ -207,6 +242,16 @@ function CreateTaskPage() {
             </div>
             <pre>{formatJson(taskPreview)}</pre>
           </div>
+
+          {createdTask ? (
+            <div className="created-task-card">
+              <div className="code-card-header">
+                <span>created task</span>
+                <strong>{createdTask.status}</strong>
+              </div>
+              <pre>{formatJson(createdTask.taskDetails)}</pre>
+            </div>
+          ) : null}
         </aside>
       </div>
     </section>

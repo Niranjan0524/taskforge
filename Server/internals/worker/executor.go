@@ -16,8 +16,12 @@ func ExecuteTask(ctx context.Context, task storage.Task) error {
 		fmt.Println("taskExecuted")
 
 	case "generate_report":
+		time.Sleep(5 * time.Second)
 		fmt.Println("generating report:", task.Payload)
 
+	case "resize_image":
+		time.Sleep(5 * time.Second)
+		fmt.Println("Resizing Image", task.Payload)
 	default:
 		fmt.Println("unknown task type:", task.Type)
 		time.Sleep(5 * time.Second)
