@@ -9,11 +9,17 @@ import (
 
 	"github.com/Niranjan0524/taskforge/server/internals/Storage/redisStore"
 	"github.com/Niranjan0524/taskforge/server/internals/handlers"
+	"github.com/Niranjan0524/taskforge/server/internals/handlers/webSockets"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"github.com/redis/go-redis/v9"
 )
 
 func main() {
+
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found")
+	}
 	router := gin.New()
 
 	router.Use(gin.Logger())
@@ -53,6 +59,7 @@ func main() {
 	authorized.GET("/api/task/:id", handlers.GetTask(store))
 	authorized.GET("/api/tasks", handlers.GetAllTasks(store))
 	authorized.DELETE("/api/tasks/:id", handlers.DeleteTask(store))
+	router.GET("/ws", webSockets.WebSocketHandler)
 
 	if err := router.Run(); err != nil {
 		log.Fatalf("failed to run server: %v", err)
