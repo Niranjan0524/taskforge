@@ -139,7 +139,6 @@ function TaskList() {
 
     try {
       const result = await getTaskStatus(taskId)
-
       updateTaskInList(taskId, { status: result.status })
       setSelectedTask((currentTask) =>
         currentTask?.id === taskId

@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	storage "github.com/Niranjan0524/taskforge/server/internals/Storage"
+	"github.com/Niranjan0524/taskforge/server/internals/handlers/webSockets"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -203,8 +204,20 @@ func (r *redisStruct) UpdateTaskStatus(ctx context.Context, taskId string, statu
 	pipe.SAdd(ctx, "tasks:"+status, rawTaskId)
 
 	_, err = pipe.Exec(ctx)
-	return err
 
+	if err == nil {
+		data, marshalErr := webSockets.MarshalTaskStatus(rawTaskId, status)
+		if marshalErr != nil {
+			return marshalErr
+		}
+
+		if publishErr := r.Client.Publish(ctx, webSockets.TaskStatusChannel, string(data)).Err(); publishErr != nil {
+			fmt.Println("Error publishing task status", publishErr)
+		}
+
+		webSockets.BroadcastTaskStatus(rawTaskId, status)
+	}
+	return err
 }
 
 func (r *redisStruct) MarkTaskRunning(ctx context.Context, taskId string) error {

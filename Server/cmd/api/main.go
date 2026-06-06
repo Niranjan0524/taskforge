@@ -20,6 +20,7 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found")
 	}
+	go webSockets.WsHub.Run()
 	router := gin.New()
 
 	router.Use(gin.Logger())
@@ -33,7 +34,7 @@ func main() {
 		redisAddr = "localhost:6379"
 	}
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     redisAddr,
 		Password: "",
 		DB:       0,
 	})
@@ -44,6 +45,7 @@ func main() {
 	}
 
 	log.Println("Connected to redis")
+	go webSockets.StartTaskStatusSubscriber(ctx, rdb)
 
 	router.GET("/test", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
