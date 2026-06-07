@@ -324,13 +324,26 @@ function TaskList() {
       </div>
 
       {selectedTask ? (
-        <aside className="task-detail-panel">
-          <div className="code-card-header">
-            <span>selected task</span>
-            <strong>{shortId(selectedTask.id)}</strong>
+        <div className="modal-overlay" onClick={() => setSelectedTask(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="code-card-header">
+                <span>selected task</span>
+                <strong>{shortId(selectedTask.id)}</strong>
+              </div>
+              <button 
+                className="modal-close-btn" 
+                onClick={() => setSelectedTask(null)}
+                aria-label="Close modal"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              <pre>{JSON.stringify(selectedTask, null, 2)}</pre>
+            </div>
           </div>
-          <pre>{JSON.stringify(selectedTask, null, 2)}</pre>
-        </aside>
+        </div>
       ) : null}
     </div>
   )
