@@ -101,10 +101,34 @@ function TaskList() {
 
     loadInitialTasks()
 
+    const ws=new WebSocket("ws://localhost:8080/ws")
+
+    ws.onopen=()=>{
+      console.log("Connected");
+    }
+
+    ws.onmessage=(event)=>{
+      const updatedData = JSON.parse(event.data);  // ← Parse the string to object
+      console.log(updatedData);
+
+      updateTaskInList(updatedData.taskId, {status: updatedData.status})
+      setSelectedTask(null)
+      toast.success(`Task ${shortId(taskId)} is ${result.status}.`,{
+        position: "bottom-center"
+      })
+    }
+
+    ws.onclose = () => {
+        console.log("Disconnected");
+    };
+
     return () => {
       isMounted = false
+      ws.close()
     }
   }, [])
+
+
 
   const updateTaskInList = (taskId, updates) => {
     setTasks((currentTasks) =>
@@ -218,6 +242,7 @@ function TaskList() {
     )
   }
 
+  
   return (
     <div className="task-list-layout">
       <div className="table-toolbar">
