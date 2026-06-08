@@ -29,4 +29,6 @@ type Storage interface {
 	MarkTaskCompleted(ctx context.Context, taskId string) error
 	MarkTaskFailed(ctx context.Context, taskId string) error
 	UpdateTaskStatus(ctx context.Context, taskId string, status string) error
+	GetStaleTasks(ctx context.Context) ([]string, error)
+	Requeue(ctx context.Context, taskId string) error
 }

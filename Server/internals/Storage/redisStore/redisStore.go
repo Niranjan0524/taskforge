@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -157,7 +158,7 @@ func (r *redisStruct) PopTask(ctx context.Context) (storage.Task, error) {
 
 	if len(result) == 0 {
 		fmt.Println("No more tasks available")
-		time.Sleep(time.Second)
+		time.Sleep(2 * time.Second)
 		return storage.Task{}, nil
 	}
 	taskId := result[0].Member.(string)
@@ -210,11 +211,20 @@ func (r *redisStruct) UpdateTaskStatus(ctx context.Context, taskId string, statu
 	pipe.Set(ctx, taskKey, updatedTask, 0)
 
 	pipe.SRem(ctx, "tasks:pending", rawTaskId)
-	pipe.SRem(ctx, "tasks:running", rawTaskId)
+	pipe.ZRem(ctx, "tasks:processing", rawTaskId)
 	pipe.SRem(ctx, "tasks:completed", rawTaskId)
 	pipe.SRem(ctx, "tasks:failed", rawTaskId)
 
-	pipe.SAdd(ctx, "tasks:"+status, rawTaskId)
+	if status != "running" {
+		pipe.SAdd(ctx, "tasks:"+status, rawTaskId)
+	} else {
+		pipe.ZAdd(ctx, "tasks:processing",
+			redis.Z{
+				Score:  float64(time.Now().Unix()),
+				Member: taskId,
+			},
+		)
+	}
 
 	_, err = pipe.Exec(ctx)
 
@@ -243,8 +253,10 @@ func (r *redisStruct) MarkTaskRunning(ctx context.Context, taskId string) error 
 	err := r.UpdateTaskStatus(ctx, taskId, "running")
 
 	if err != nil {
+		fmt.Println("Failed to store in processing queue")
 		return err
 	}
+
 	return nil
 }
 func (r *redisStruct) MarkTaskFailed(ctx context.Context, taskId string) error {
@@ -272,6 +284,46 @@ func (r *redisStruct) MarkTaskCompleted(ctx context.Context, taskId string) erro
 
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func (r *redisStruct) GetStaleTasks(ctx context.Context) ([]string, error) {
+
+	fiveMinutesAgo := time.Now().Add(-5 * time.Minute).Unix()
+
+	tasks, err := r.Client.ZRangeByScore(
+		ctx,
+		"tasks:running",
+		&redis.ZRangeBy{
+			Min: "-inf",
+			Max: strconv.FormatInt(fiveMinutesAgo, 10),
+		},
+	).Result()
+
+	if err != nil {
+		fmt.Println("Error in getting tasks from processing queue", err)
+		return []string{}, err
+	}
+
+	return tasks, nil
+}
+
+func (r *redisStruct) Requeue(ctx context.Context, taskId string) error {
+
+	err, task := r.GetTask(ctx, taskId)
+
+	if err != nil {
+		fmt.Println("Error in getting tasks from processing queue", err)
+		return err
+	}
+
+	priorityScore := float64(task.Priority)*1e13 - float64(time.Now().UnixMilli())
+	_, reqErr := r.Client.ZAdd(ctx, "queue:priority", redis.Z{Score: priorityScore, Member: task.ID}).Result()
+
+	if reqErr != nil {
+		fmt.Println("Requeue Error", reqErr)
+		return reqErr
 	}
 	return nil
 }

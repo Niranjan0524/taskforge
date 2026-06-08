@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	storage "github.com/Niranjan0524/taskforge/server/internals/Storage"
 )
@@ -21,6 +22,7 @@ func NewWorkerPool(store storage.Storage, workerSize int) *WorkerPool {
 }
 
 func (p *WorkerPool) Start(ctx context.Context) error {
+	go p.runRecoveryWorker(ctx)
 
 	for i := 1; i <= p.workerSize; i++ {
 		go p.runWorker(ctx, i)
@@ -70,6 +72,28 @@ func (p *WorkerPool) runWorker(ctx context.Context, workerID int) {
 
 			if err := p.store.MarkTaskCompleted(ctx, task.ID); err != nil {
 				log.Println("error marking task completed:", err)
+			}
+		}
+	}
+}
+
+func (p *WorkerPool) runRecoveryWorker(ctx context.Context) {
+	fmt.Println("Running recovery Routine")
+	ticker := time.NewTicker(time.Minute)
+
+	for range ticker.C {
+		staleTasks, err := p.store.GetStaleTasks(ctx)
+
+		if err != nil {
+			fmt.Println("Error", err)
+			return
+		}
+
+		for _, taskID := range staleTasks {
+			// move back to queue
+			err := p.store.Requeue(ctx, taskID)
+			if err != nil {
+				fmt.Println(err)
 			}
 		}
 	}
