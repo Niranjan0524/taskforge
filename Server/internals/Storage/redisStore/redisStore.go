@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	storage "github.com/Niranjan0524/taskforge/server/internals/Storage"
 	"github.com/Niranjan0524/taskforge/server/internals/handlers/webSockets"
@@ -43,7 +44,11 @@ func (r *redisStruct) CreateTask(ctx context.Context, task storage.Task) error {
 	pipe := r.Client.TxPipeline()
 
 	pipe.Set(ctx, taskKey, taskJSON, 0)
-	pipe.LPush(ctx, "queue:tasks", task.ID)
+	// pipe.LPush(ctx, "queue:tasks", task.ID)
+
+	priorityScore := float64(task.Priority)*1e13 - float64(time.Now().UnixMilli())
+	pipe.ZAdd(ctx, "queue:priority", redis.Z{Score: priorityScore, Member: task.ID})
+
 	pipe.SAdd(ctx, "tasks:pending", task.ID)
 
 	_, err = pipe.Exec(ctx)
@@ -143,18 +148,26 @@ func (r *redisStruct) DeleteTask(ctx context.Context, taskID string) error {
 func (r *redisStruct) PopTask(ctx context.Context) (storage.Task, error) {
 
 	fmt.Println("waiting for task from queue:tasks")
-	result, err := r.Client.BRPop(ctx, 0, "queue:tasks").Result()
+	result, err := r.Client.ZPopMax(ctx, "queue:priority").Result()
 
 	if err != nil {
 		fmt.Println("Error in popping task", err)
 		return storage.Task{}, err
 	}
 
-	taskId := result[1]
+	if len(result) == 0 {
+		fmt.Println("No more tasks available")
+		time.Sleep(time.Second)
+		return storage.Task{}, nil
+	}
+	taskId := result[0].Member.(string)
+	priorityScore := result[0].Score
 	fmt.Println("popped task id:", taskId)
+	fmt.Println("Popped task priority:", priorityScore)
+
 	taskErr, task := r.GetTask(ctx, taskId)
 
-	fmt.Println("popped task: ", task)
+	// fmt.Println("popped task: ", task)
 	if taskErr != nil {
 		fmt.Println("Error in popTask", taskErr)
 		return storage.Task{}, taskErr

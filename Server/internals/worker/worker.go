@@ -2,6 +2,7 @@ package worker
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	storage "github.com/Niranjan0524/taskforge/server/internals/Storage"
@@ -46,6 +47,11 @@ func (p *WorkerPool) runWorker(ctx context.Context, workerID int) {
 				}
 
 				log.Println("error popping task:", err)
+				continue
+			}
+
+			if task.ID == "" {
+				fmt.Println("No more tasks available")
 				continue
 			}
 

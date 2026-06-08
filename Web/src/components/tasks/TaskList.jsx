@@ -113,7 +113,7 @@ function TaskList() {
 
       updateTaskInList(updatedData.taskId, {status: updatedData.status})
       setSelectedTask(null)
-      toast.success(`Task ${shortId(taskId)} is ${result.status}.`,{
+      toast.success(`Task ${shortId(updatedData.taskId)} is ${updatedData.status}.`,{
         position: "bottom-center"
       })
     }
