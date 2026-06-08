@@ -11,6 +11,7 @@ import {
   Plus,
   RotateCcw,
   Send,
+  Info,
 } from 'lucide-react'
 import { createTask } from '@/api/tasks'
 import TopNav from '@/components/layout/TopNav'
@@ -40,12 +41,12 @@ function formatJson(value) {
 
 function CreateTaskPage() {
   const [taskType, setTaskType] = useState('send_email')
-  const [priority, setPriority] = useState(5)
+  const [priority, setPriority] = useState(1)
   const [maxRetries, setMaxRetries] = useState(3)
   const [payload, setPayload] = useState(formatJson(payloadTemplates.send_email))
   const [createdTask, setCreatedTask] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-
+  const [infoIsHovered, setInfoIsHovered] = useState(false);
   const parsedPayload = useMemo(() => {
     try {
       return {
@@ -156,12 +157,27 @@ function CreateTaskPage() {
 
           <div className="field-row">
             <label className="field-group">
-              <span>Priority</span>
+              <span className='flex items-center relative'>
+                Priority 
+                <div 
+                  className='ml-2 cursor-pointer relative'
+                  onMouseEnter={() => setInfoIsHovered(true)}
+                  onMouseLeave={() => setInfoIsHovered(false)}
+                >
+                  <Info size={18} />
+                  {infoIsHovered && (
+                    <span className='absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-orange-500 text-white text-[11px] rounded whitespace-nowrap pointer-events-none z-10 shadow-lg'>
+                      Higher the number, higher the priority
+                    </span>
+                  )}
+                </div>
+              </span>
               <input
                 min="0"
                 max="10"
                 type="number"
                 value={priority}
+                // placeholder='Priority Increases With Number..'
                 onChange={(event) => setPriority(event.target.value)}
               />
             </label>
