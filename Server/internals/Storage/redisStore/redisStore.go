@@ -215,8 +215,15 @@ func (r *redisStruct) UpdateTaskStatus(ctx context.Context, taskId string, statu
 	pipe.SRem(ctx, "tasks:completed", rawTaskId)
 	pipe.SRem(ctx, "tasks:failed", rawTaskId)
 
-	if status != "running" {
+	if status == "completed" || status == "pending" {
 		pipe.SAdd(ctx, "tasks:"+status, rawTaskId)
+	} else if status == "dead" {
+		pipe.ZAdd(ctx, "queue:dead",
+			redis.Z{
+				Score:  float64(time.Now().Unix()),
+				Member: taskId,
+			},
+		)
 	} else {
 		pipe.ZAdd(ctx, "tasks:processing",
 			redis.Z{
@@ -308,11 +315,26 @@ func (r *redisStruct) GetStaleTasks(ctx context.Context) ([]string, error) {
 
 	return tasks, nil
 }
+func (r *redisStruct) MoveTaskToDeadQueue(ctx context.Context, taskId string) error {
 
+	err := r.UpdateTaskStatus(ctx, taskId, "Dead")
+
+	if err != nil {
+		fmt.Println("Failed to move task to dead queue", err)
+		return err
+	}
+
+	return nil
+}
 func (r *redisStruct) CheckAndRetryTask(ctx context.Context, taskId string) (bool, error) {
 	err, task := r.GetTask(ctx, taskId)
 
 	if task.RetryCount >= task.MaxRetries {
+		movErr := r.MoveTaskToDeadQueue(ctx, task.ID)
+		if movErr != nil {
+			fmt.Println("Failed to move task to dead queue", taskId)
+			return false, nil
+		}
 		return false, nil
 	}
 
