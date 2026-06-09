@@ -31,4 +31,5 @@ type Storage interface {
 	UpdateTaskStatus(ctx context.Context, taskId string, status string) error
 	GetStaleTasks(ctx context.Context) ([]string, error)
 	Requeue(ctx context.Context, taskId string) error
+	CheckAndRetryTask(ctx context.Context, taskId string) (bool, error)
 }

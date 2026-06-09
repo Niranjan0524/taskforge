@@ -64,8 +64,21 @@ func (p *WorkerPool) runWorker(ctx context.Context, workerID int) {
 
 			if err := ExecuteTask(ctx, task); err != nil {
 				log.Println("error executing task:", err)
-				if markErr := p.store.MarkTaskFailed(ctx, task.ID); markErr != nil {
+				markErr := p.store.MarkTaskFailed(ctx, task.ID)
+
+				if markErr != nil {
 					log.Println("error marking task failed:", markErr)
+				}
+
+				toRequeue, reqErr := p.store.CheckAndRetryTask(ctx, task.ID)
+				if toRequeue == false {
+					fmt.Println("Error in updating the Retry", reqErr)
+					continue
+				}
+				// move back to queue
+				err := p.store.Requeue(ctx, task.ID)
+				if err != nil {
+					fmt.Println(err)
 				}
 				continue
 			}
@@ -90,6 +103,11 @@ func (p *WorkerPool) runRecoveryWorker(ctx context.Context) {
 		}
 
 		for _, taskID := range staleTasks {
+			toRequeue, reqErr := p.store.CheckAndRetryTask(ctx, taskID)
+			if toRequeue == false {
+				fmt.Println("Error in updating the Retry", reqErr)
+				continue
+			}
 			// move back to queue
 			err := p.store.Requeue(ctx, taskID)
 			if err != nil {

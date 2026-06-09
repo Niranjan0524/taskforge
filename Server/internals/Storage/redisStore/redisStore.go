@@ -309,6 +309,34 @@ func (r *redisStruct) GetStaleTasks(ctx context.Context) ([]string, error) {
 	return tasks, nil
 }
 
+func (r *redisStruct) CheckAndRetryTask(ctx context.Context, taskId string) (bool, error) {
+	err, task := r.GetTask(ctx, taskId)
+
+	if task.RetryCount >= task.MaxRetries {
+		return false, nil
+	}
+
+	task.RetryCount++
+
+	updatedJSON, err := json.Marshal(task)
+	if err != nil {
+		return false, err
+	}
+
+	err = r.Client.Set(
+		ctx,
+		redisTaskKey(task.ID),
+		updatedJSON,
+		0,
+	).Err()
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
 func (r *redisStruct) Requeue(ctx context.Context, taskId string) error {
 
 	err, task := r.GetTask(ctx, taskId)
