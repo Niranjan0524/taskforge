@@ -64,6 +64,15 @@ func (p *WorkerPool) runWorker(ctx context.Context, workerID int) {
 
 			if err := ExecuteTask(p.store, ctx, task); err != nil {
 				log.Println("error executing task:", err)
+
+				// Check if task was cancelled
+				if err.Error() == CancelledTaskError {
+					log.Println("task was cancelled:", task.ID)
+					// Task is already marked as cancelled by the cancel API
+					continue
+				}
+
+				// Regular execution error - mark as failed
 				markErr := p.store.MarkTaskFailed(ctx, task.ID)
 
 				if markErr != nil {

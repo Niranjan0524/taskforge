@@ -210,12 +210,12 @@ func (r *redisStruct) UpdateTaskStatus(ctx context.Context, taskId string, statu
 
 	pipe.Set(ctx, taskKey, updatedTask, 0)
 
-	pipe.SRem(ctx, "tasks:pending", rawTaskId)
 	pipe.ZRem(ctx, "tasks:processing", rawTaskId)
 	pipe.SRem(ctx, "tasks:completed", rawTaskId)
 	pipe.SRem(ctx, "tasks:failed", rawTaskId)
+	pipe.ZRem(ctx, "queue:priority", rawTaskId)
 
-	if status == "completed" || status == "pending" {
+	if status == "completed" || status == "pending" || status == "cancelled" || status == "failed" {
 		pipe.SAdd(ctx, "tasks:"+status, rawTaskId)
 	} else if status == "dead" {
 		pipe.ZAdd(ctx, "queue:dead",
@@ -224,7 +224,7 @@ func (r *redisStruct) UpdateTaskStatus(ctx context.Context, taskId string, statu
 				Member: taskId,
 			},
 		)
-	} else {
+	} else if status == "running" {
 		pipe.ZAdd(ctx, "tasks:processing",
 			redis.Z{
 				Score:  float64(time.Now().Unix()),
@@ -416,7 +416,7 @@ func (r *redisStruct) CancelTask(ctx context.Context, taskId string) error {
 	case "failed":
 		return errors.New("task already failed")
 
-	case "default":
+	default:
 		err := r.UpdateTaskStatus(ctx, taskId, "cancelled")
 		if err != nil {
 			fmt.Println("error", err)

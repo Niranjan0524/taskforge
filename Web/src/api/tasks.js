@@ -82,3 +82,19 @@ export async function deleteTask(taskId) {
 
   return data
 }
+
+
+export async function cancelTask(taskId) {
+  const response = await fetch(`${API_BASE_URL}/api/tasks/cancel/${taskId}`, {
+    method: 'DELETE',
+  })
+
+  const data = await readResponse(response)
+
+  if (!response.ok) {
+    const message = data?.error || data || 'Failed to delete task'
+    throw new Error(message)
+  }
+
+  return data
+}

@@ -9,6 +9,8 @@ import (
 	storage "github.com/Niranjan0524/taskforge/server/internals/Storage"
 )
 
+const CancelledTaskError = "Task is Cancelled"
+
 func ExecuteTask(store storage.Storage, ctx context.Context, task storage.Task) error {
 	switch task.Type {
 	case "send_email":
@@ -52,7 +54,7 @@ func checkIfCancelled(store storage.Storage, ctx context.Context, task storage.T
 		}
 		if check == true {
 			fmt.Println("Task is cancelled")
-			return false, errors.New("Task is Cancelled")
+			return true, errors.New(CancelledTaskError)
 		}
 		time.Sleep(time.Second)
 	}

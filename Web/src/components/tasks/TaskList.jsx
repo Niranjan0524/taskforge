@@ -10,6 +10,7 @@ import {
   SquareX,
 } from 'lucide-react'
 import {
+  cancelTask,
   deleteTask,
   getTask,
   getTasks,
@@ -21,6 +22,7 @@ const statusLabels = {
   running: 'Running',
   completed: 'Completed',
   failed: 'Failed',
+  cancelled:'Cancelled',
 }
 
 function formatDate(value) {
@@ -206,6 +208,18 @@ function TaskList() {
     }
   }
 
+  const handleCancelTask=async(taskId)=>{
+    try{
+      await toast.promise(cancelTask(taskId), {
+        loading: 'Canceling task...',
+        success: `Task ${shortId(taskId)} Cancelled.`,
+        error: (deleteError) => deleteError.message || 'Could not Cancel task.',
+      });
+    } catch {
+      return
+    }
+  }
+
   if (loading) {
     return (
       <div className="state-panel">
@@ -243,10 +257,7 @@ function TaskList() {
     )
   }
 
-  const handleCancelTask=async(taskId)=>{
-
-    console.log("cancelTask",taskId)
-  }
+  
   
   return (
     <div className="task-list-layout">
@@ -320,7 +331,7 @@ function TaskList() {
                       >
                         <Trash2 size={16} />
                       </button>
-                      <button
+                      {task.status=="pending" || task.status=="running" ?<button
                         aria-label="Cancel task"
                         className="icon-button danger"
                         disabled={isActive}
@@ -328,7 +339,7 @@ function TaskList() {
                         onClick={() => handleCancelTask(task.id)}
                       >
                         <SquareX size={16}/>
-                      </button>
+                      </button>:<></>}
                     </div>
                   </td>
                 </tr>
