@@ -96,5 +96,5 @@ export async function cancelTask(taskId) {
     throw new Error(message)
   }
 
-  return data
+  return 
 }

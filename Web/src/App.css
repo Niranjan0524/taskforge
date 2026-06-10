@@ -871,8 +871,8 @@ h1 {
 }
 
 .status-badge.running {
-  border-color: rgba(112, 191, 255, 0.32);
-  color: var(--olive);
+  border-color: rgba(74, 91, 244, 0.38);
+  color: rgba(74, 91, 244, 0.38);
 }
 
 .status-badge.completed {
@@ -883,6 +883,11 @@ h1 {
 .status-badge.failed {
   border-color: rgba(255, 159, 159, 0.36);
   color: #b3481b;
+}
+
+.status-badge.cancelled {
+  border-color: #009d98;
+  color:#009d98;
 }
 
 .table-actions {
@@ -1156,8 +1161,8 @@ h1 {
 }
 
 .app-shell .status-badge.running {
-  border-color: rgba(124, 125, 117, 0.38);
-  color: var(--olive);
+  border-color: rgba(74, 91, 244, 0.38);
+  color: rgba(74, 91, 244, 0.38);
 }
 
 .app-shell .status-badge.completed {
@@ -1170,6 +1175,11 @@ h1 {
 .app-shell .error-state svg,
 .app-shell .icon-button.danger {
   color: #b3481b;
+}
+
+.app-shell .status-badge.cancelled {
+  border-color:#009d98;
+  color: #009d98;
 }
 
 @keyframes spin {

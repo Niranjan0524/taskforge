@@ -210,12 +210,10 @@ function TaskList() {
 
   const handleCancelTask=async(taskId)=>{
     try{
-      await toast.promise(cancelTask(taskId), {
-        loading: 'Canceling task...',
-        success: `Task ${shortId(taskId)} Cancelled.`,
-        error: (deleteError) => deleteError.message || 'Could not Cancel task.',
-      });
+      await cancelTask(taskId);
+
     } catch {
+      toast.error("Error in cancelling task");
       return
     }
   }
