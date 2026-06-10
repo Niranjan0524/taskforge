@@ -127,3 +127,18 @@ func DeleteTask(store storage.Storage) gin.HandlerFunc {
 		ctx.JSON(http.StatusOK, "Task Deleted Successfully")
 	}
 }
+
+func CancelTask(store storage.Storage) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+		taskId := ctx.Param("id")
+		err := store.CancelTask(ctx.Request.Context(), taskId)
+
+		if err != nil {
+			fmt.Println("error Cancelling task", err)
+			ctx.JSON(http.StatusInternalServerError, err)
+		}
+
+		ctx.JSON(http.StatusOK, "Task Cancelled Successfully")
+	}
+}

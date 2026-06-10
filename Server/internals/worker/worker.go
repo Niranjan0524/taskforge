@@ -62,7 +62,7 @@ func (p *WorkerPool) runWorker(ctx context.Context, workerID int) {
 				continue
 			}
 
-			if err := ExecuteTask(ctx, task); err != nil {
+			if err := ExecuteTask(p.store, ctx, task); err != nil {
 				log.Println("error executing task:", err)
 				markErr := p.store.MarkTaskFailed(ctx, task.ID)
 

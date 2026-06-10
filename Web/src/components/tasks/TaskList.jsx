@@ -7,6 +7,7 @@ import {
   RefreshCcw,
   RotateCcw,
   Trash2,
+  SquareX,
 } from 'lucide-react'
 import {
   deleteTask,
@@ -242,6 +243,10 @@ function TaskList() {
     )
   }
 
+  const handleCancelTask=async(taskId)=>{
+
+    console.log("cancelTask",taskId)
+  }
   
   return (
     <div className="task-list-layout">
@@ -279,6 +284,7 @@ function TaskList() {
                     <span className={`status-badge ${task.status || 'pending'}`}>
                       {statusLabels[task.status] || task.status || 'Pending'}
                     </span>
+                    
                   </td>
                   <td>{task.priority ?? 0}</td>
                   <td>
@@ -313,6 +319,15 @@ function TaskList() {
                         onClick={() => handleDeleteTask(task.id)}
                       >
                         <Trash2 size={16} />
+                      </button>
+                      <button
+                        aria-label="Cancel task"
+                        className="icon-button danger"
+                        disabled={isActive}
+                        type="button"
+                        onClick={() => handleCancelTask(task.id)}
+                      >
+                        <SquareX size={16}/>
                       </button>
                     </div>
                   </td>

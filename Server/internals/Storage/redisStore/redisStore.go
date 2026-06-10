@@ -375,5 +375,54 @@ func (r *redisStruct) Requeue(ctx context.Context, taskId string) error {
 		fmt.Println("Requeue Error", reqErr)
 		return reqErr
 	}
+	statusErr := r.UpdateTaskStatus(ctx, task.ID, "pending")
+	if statusErr != nil {
+		fmt.Println("Task status update failed", statusErr)
+		return statusErr
+	}
+	return nil
+}
+
+func (r *redisStruct) IsCancelled(ctx context.Context, task storage.Task) (bool, error) {
+
+	err, task := r.GetTask(ctx, task.ID)
+
+	if err != nil {
+		fmt.Println("Error in checking status", err)
+		return false, err
+	}
+
+	if task.Status == "cancelled" {
+		return true, nil
+	}
+
+	return false, nil
+
+}
+
+func (r *redisStruct) CancelTask(ctx context.Context, taskId string) error {
+	err, task := r.GetTask(ctx, taskId)
+
+	if err != nil {
+		fmt.Println("Error in cancelling task", err)
+		return err
+	}
+
+	switch task.Status {
+
+	case "completed":
+		return errors.New("task already completed")
+
+	case "failed":
+		return errors.New("task already failed")
+
+	case "default":
+		err := r.UpdateTaskStatus(ctx, taskId, "cancelled")
+		if err != nil {
+			fmt.Println("error", err)
+			return err
+		}
+	}
+
 	return nil
 }

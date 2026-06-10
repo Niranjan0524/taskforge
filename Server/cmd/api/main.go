@@ -61,6 +61,7 @@ func main() {
 	authorized.GET("/api/task/:id", handlers.GetTask(store))
 	authorized.GET("/api/tasks", handlers.GetAllTasks(store))
 	authorized.DELETE("/api/tasks/:id", handlers.DeleteTask(store))
+	authorized.DELETE("/api/tasks/cancel/:id", handlers.CancelTask(store))
 	router.GET("/ws", webSockets.WebSocketHandler)
 
 	if err := router.Run(); err != nil {
