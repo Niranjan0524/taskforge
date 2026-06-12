@@ -1,73 +1,99 @@
-.taskflow-container {
+.taskflow-shell {
+  display: flex;
+  gap: 0;
+  min-height: 760px;
   width: 100%;
-  height: 100%;
-  background: #0f0f1e;
-  border-radius: 12px;
   overflow: hidden;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+  border-radius: 24px;
+  border: 1px solid rgba(128, 149, 190, 0.14);
+  background:
+    radial-gradient(circle at top left, rgba(50, 86, 148, 0.2), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(17, 24, 39, 0.7), transparent 45%),
+    linear-gradient(180deg, #09101d 0%, #0a1220 100%);
+  box-shadow:
+    0 26px 70px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
-.taskflow-container .react-flow__background {
-  background-color: #0f0f1e;
+.taskflow-canvas {
+  min-width: 0;
+  flex: 1 1 auto;
+  position: relative;
+  overflow: hidden;
 }
 
-.taskflow-container .react-flow__controls {
-  background: rgba(20, 20, 35, 0.8);
-  border: 1px solid rgba(100, 100, 130, 0.3);
-  border-radius: 8px;
+.taskflow-canvas .react-flow {
+  background:
+    radial-gradient(circle at top, rgba(90, 120, 180, 0.12), transparent 42%),
+    linear-gradient(180deg, rgba(6, 10, 19, 0.95), rgba(8, 13, 26, 0.96));
 }
 
-.taskflow-container .react-flow__controls button {
-  background: rgba(30, 30, 50, 0.9);
-  border: 1px solid rgba(100, 100, 130, 0.3);
-  color: #e0e0ff;
-  transition: all 0.2s ease;
+.taskflow-canvas .react-flow__background {
+  background-color: transparent;
 }
 
-.taskflow-container .react-flow__controls button:hover {
-  background: rgba(50, 50, 80, 0.9);
-  border-color: rgba(150, 150, 200, 0.5);
-  color: #ffffff;
+.taskflow-canvas .react-flow__container {
+  background: transparent;
 }
 
-.taskflow-container .react-flow__controls button:active {
-  transform: scale(0.95);
+.taskflow-canvas .react-flow__controls {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(128, 149, 190, 0.18);
+  background: rgba(8, 13, 24, 0.78);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.26);
+}
+
+.taskflow-canvas .react-flow__controls button {
+  background: transparent;
+  border: 0;
+  color: #d5e0ff;
+}
+
+.taskflow-canvas .react-flow__controls button:hover {
+  background: rgba(128, 149, 190, 0.14);
+}
+
+.taskflow-canvas .react-flow__controls button:active {
+  transform: none;
+}
+
+.taskflow-canvas .react-flow__edge-path {
+  stroke: rgba(128, 149, 190, 0.45);
+  stroke-width: 2.25;
+}
+
+.taskflow-canvas .react-flow__edge.animated path {
+  stroke: rgba(162, 189, 255, 0.95);
+  stroke-dasharray: 6;
+  animation: flow 0.7s linear infinite;
+}
+
+.taskflow-canvas .react-flow__edge.selected .react-flow__edge-path {
+  stroke: rgba(162, 189, 255, 1);
 }
 
 .task-minimap {
-  background: rgba(20, 20, 35, 0.8) !important;
-  border: 1px solid rgba(100, 100, 130, 0.3) !important;
-  border-radius: 8px;
+  border: 1px solid rgba(128, 149, 190, 0.16) !important;
+  border-radius: 14px;
+  background: rgba(6, 10, 18, 0.88) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.26);
 }
 
-/* Customize edge appearance */
-.taskflow-container .react-flow__edge-path {
-  stroke: rgba(100, 150, 255, 0.6);
-  stroke-width: 2;
-}
-
-.taskflow-container .react-flow__edge.animated path {
-  stroke: rgba(120, 170, 255, 0.8);
-  stroke-dasharray: 5;
-  animation: flow 0.5s linear infinite;
+.taskflow-shell .react-flow__attribution {
+  background: transparent;
+  color: rgba(214, 225, 255, 0.45);
 }
 
 @keyframes flow {
   to {
-    stroke-dashoffset: -10;
+    stroke-dashoffset: -12;
   }
 }
 
-/* Smooth pan and zoom transitions */
-.taskflow-container .react-flow__container {
-  background: #0f0f1e;
-}
-
-/* Panning hand cursor */
-.taskflow-container.panning {
-  cursor: grab;
-}
-
-.taskflow-container.panning:active {
-  cursor: grabbing;
+@media (max-width: 1180px) {
+  .taskflow-shell {
+    min-height: auto;
+    flex-direction: column;
+  }
 }

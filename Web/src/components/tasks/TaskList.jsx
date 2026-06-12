@@ -16,6 +16,7 @@ import {
   getTasks,
   getTaskStatus,
 } from '@/api/tasks'
+import TaskFlow from './TaskFlow'
 
 const statusLabels = {
   pending: 'Pending',
@@ -257,8 +258,13 @@ function TaskList() {
 
   
   
-  return (
+  return (<>
+  <section>
+      <TaskFlow tasks={tasks} />
+    </section>
     <div className="task-list-layout">
+      
+
       <div className="table-toolbar">
         <span>{taskCount} tasks</span>
         <button className="icon-text-button" type="button" onClick={loadTasks}>
@@ -370,6 +376,7 @@ function TaskList() {
         </div>
       ) : null}
     </div>
+  </>
   )
 }
 

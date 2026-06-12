@@ -17,8 +17,8 @@ function DashboardPage() {
           Review task type, status, priority, retry progress, creation time,
           and the core actions needed while the worker pool is running.
         </p>
-      </div>
-
+      </div>  
+    
       <section className="dashboard-panel">
         <div className="form-section-header">
           <div>
