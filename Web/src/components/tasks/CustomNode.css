@@ -1,0 +1,88 @@
+.custom-node {
+  background: linear-gradient(135deg, #1a1a3e 0%, #2d2d5f 100%);
+  border: 2px solid rgba(120, 150, 255, 0.5);
+  border-radius: 12px;
+  padding: 16px 24px;
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.custom-node:hover {
+  background: linear-gradient(135deg, #2a2a4e 0%, #3d3d7f 100%);
+  border-color: rgba(150, 180, 255, 0.7);
+  box-shadow: 0 12px 32px rgba(100, 150, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.custom-node.selected {
+  background: linear-gradient(135deg, #2a3a5e 0%, #3d4d8f 100%);
+  border-color: rgba(180, 200, 255, 0.8);
+  box-shadow: 0 16px 40px rgba(100, 150, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.node-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.node-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e0e0ff;
+  text-transform: capitalize;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+/* Handle styling */
+.custom-node .react-flow__handle {
+  background: rgba(120, 150, 255, 0.7);
+  border: 2px solid rgba(200, 220, 255, 0.3);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.custom-node .react-flow__handle:hover {
+  background: rgba(150, 180, 255, 0.9);
+  border-color: rgba(220, 240, 255, 0.6);
+  width: 12px;
+  height: 12px;
+}
+
+.custom-node .react-flow__handle-top {
+  top: -8px;
+}
+
+.custom-node .react-flow__handle-bottom {
+  bottom: -8px;
+}
+
+.custom-node .react-flow__handle-left {
+  left: -8px;
+}
+
+.custom-node .react-flow__handle-right {
+  right: -8px;
+}
+
+/* Connection indication */
+.custom-node .react-flow__handle.connectingFrom {
+  background: rgba(100, 200, 255, 1);
+}
+
+.custom-node .react-flow__handle.valid {
+  background: rgba(100, 200, 255, 1);
+}
+
+.custom-node .react-flow__handle.invalid {
+  background: rgba(255, 100, 100, 1);
+}

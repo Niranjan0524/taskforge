@@ -1,0 +1,54 @@
+.queue-node {
+  min-width: 180px;
+  padding: 18px 22px;
+  border-radius: 20px;
+  border: 1px solid rgba(124, 161, 255, 0.28);
+  background: linear-gradient(135deg, rgba(19, 25, 44, 0.98), rgba(10, 15, 30, 0.96));
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  color: #f4f7ff;
+  text-align: left;
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.queue-node:hover {
+  transform: translateY(-2px);
+  border-color: rgba(145, 180, 255, 0.48);
+  box-shadow:
+    0 20px 44px rgba(0, 0, 0, 0.48),
+    0 0 0 1px rgba(120, 170, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.queue-node-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.queue-node-title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #d9e5ff;
+}
+
+.queue-node-count {
+  font-size: 1.7rem;
+  line-height: 1;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.queue-node .queue-handle {
+  width: 10px;
+  height: 10px;
+  border: 2px solid rgba(183, 204, 255, 0.55);
+  background: #7b95db;
+}
+
+.queue-node .queue-handle:hover {
+  background: #a7bfff;
+}
