@@ -6,8 +6,8 @@
   padding: 18px;
   border-radius: 22px;
   border: 1px solid color-mix(in srgb, var(--status-accent) 28%, transparent);
-  background:
-    linear-gradient(180deg, rgba(15, 20, 34, 0.96), rgba(9, 13, 23, 0.98));
+  /* background:
+    linear-gradient(180deg, rgba(31, 32, 35, 0.96), rgba(9, 13, 23, 0.98)); */
   box-shadow:
     0 18px 40px rgba(0, 0, 0, 0.32),
     inset 0 1px 0 rgba(255, 255, 255, 0.03);
@@ -53,7 +53,7 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--status-accent) 72%, #e8efff);
+  color: color-mix(in srgb, var(--status-accent) 72%, #121419);
 }
 
 .queue-node-count {
@@ -79,7 +79,7 @@
   border: 1px solid rgba(128, 149, 190, 0.12);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
-  color: #e9efff;
+  color: #03060e;
   text-align: left;
   transition:
     transform 140ms ease,
@@ -101,7 +101,7 @@
 }
 
 .queue-task-row--subtle {
-  color: #a8b6d6;
+  color: #090a0c;
   font-size: 0.82rem;
 }
 
@@ -116,7 +116,7 @@
 
 .queue-task-id {
   font-weight: 700;
-  color: #f8fbff;
+  color: #050607;
 }
 
 .queue-task-priority {
@@ -178,18 +178,22 @@
   .queue-node {
     width: min(100%, 330px);
   }
-}.queue-node {
-  min-width: 180px;
-  padding: 18px 22px;
-  border-radius: 20px;
-  border: 1px solid rgba(124, 161, 255, 0.28);
-  background: linear-gradient(135deg, rgba(19, 25, 44, 0.98), rgba(10, 15, 30, 0.96));
-  box-shadow:
-    0 16px 36px rgba(0, 0, 0, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  color: #f4f7ff;
-  text-align: left;
-  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.queue-node--pending{
+  background: linear-gradient(135deg,rgb(255, 237, 213), rgba(10, 15, 30, 0.96));
+}
+.queue-node--running{
+  background: linear-gradient(135deg, rgb(199, 221, 250), rgba(10, 15, 30, 0.96));
+}
+.queue-node--completed{
+  background: linear-gradient(135deg, rgb(196, 247, 214), rgba(10, 15, 30, 0.96));
+}
+.queue-node--failed{  
+  background: linear-gradient(135deg, rgb(248, 184, 184), rgba(10, 15, 30, 0.96));
+}
+.queue-node--cancelled{  
+  background: linear-gradient(135deg, rgb(224, 183, 248), rgba(10, 15, 30, 0.96));
 }
 
 .queue-node:hover {
@@ -212,14 +216,14 @@
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #d9e5ff;
+  color: #0b0e13;
 }
 
 .queue-node-count {
   font-size: 1.7rem;
   line-height: 1;
   font-weight: 800;
-  color: #ffffff;
+  color: #0c0a0a;
 }
 
 .queue-node .queue-handle {

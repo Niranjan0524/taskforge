@@ -82,8 +82,7 @@ function TaskFlow({ tasks = [] }) {
           defaultEdgeOptions={{ type: 'smoothstep' }}
         >
           <Background
-            color="rgba(131, 151, 196, 0.18)"
-            gap={18}
+            gap={40}
             size={1.25}
             variant={BackgroundVariant.Dots}
             className="task-background"
@@ -91,7 +90,7 @@ function TaskFlow({ tasks = [] }) {
           <Controls showInteractive={false} />
           <MiniMap
             nodeColor={(node) => node.data?.theme?.accent || '#64748b'}
-            maskColor="rgba(2, 6, 23, 0.5)"
+            maskColor="rgba(37, 38, 40, 0.5)"
             className="task-minimap"
             pannable
             zoomable

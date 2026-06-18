@@ -259,9 +259,9 @@ function TaskList() {
   
   
   return (<>
-  <section>
+
       <TaskFlow tasks={tasks} />
-    </section>
+
     <div className="task-list-layout">
       
 

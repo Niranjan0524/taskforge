@@ -29,11 +29,11 @@ export const FLOW_STATUS_META = {
 }
 
 export const FLOW_NODE_POSITIONS = {
-  pending: { x: 0, y: 0 },
-  running: { x: 370, y: 0 },
-  completed: { x: 740, y: -210 },
-  failed: { x: 740, y: 0 },
-  cancelled: { x: 740, y: 210 },
+  pending: { x: -300, y: 0 },
+  running: { x: 0, y: 200 },
+  completed: { x: 600, y: -310 },
+  failed: { x: 1000, y: 200 },
+  cancelled: { x: 600, y: 310 },
 }
 
 export const FLOW_EDGES = [

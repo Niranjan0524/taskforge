@@ -5,7 +5,7 @@
   width: 100%;
   overflow: hidden;
   border-radius: 24px;
-  border: 1px solid rgba(128, 149, 190, 0.14);
+  border: 1px solid rgba(8, 85, 240, 0.14);
   background:
     radial-gradient(circle at top left, rgba(50, 86, 148, 0.2), transparent 35%),
     radial-gradient(circle at bottom right, rgba(17, 24, 39, 0.7), transparent 45%),
@@ -24,8 +24,8 @@
 
 .taskflow-canvas .react-flow {
   background:
-    radial-gradient(circle at top, rgba(90, 120, 180, 0.12), transparent 42%),
-    linear-gradient(180deg, rgba(6, 10, 19, 0.95), rgba(8, 13, 26, 0.96));
+    radial-gradient(circle at top, rgba(230, 246, 2, 0.12), transparent 42%),
+    linear-gradient(180deg, rgba(28, 29, 29, 0.95), rgba(8, 13, 26, 0.96));
 }
 
 .taskflow-canvas .react-flow__background {
@@ -82,7 +82,7 @@
 
 .taskflow-shell .react-flow__attribution {
   background: transparent;
-  color: rgba(214, 225, 255, 0.45);
+  color: rgba(76, 79, 86, 0.45);
 }
 
 @keyframes flow {

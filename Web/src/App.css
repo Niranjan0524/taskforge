@@ -29,12 +29,15 @@
 .action-grid,
 .workflow-section,
 .page-heading,
-.create-grid,
-.dashboard-panel {
+.create-grid{
   width: min(1160px, 100%);
   margin-inline: auto;
 }
 
+.dashboard-panel {
+  width: min(1360px, 100%);
+  margin-inline: auto;
+}
 .topbar {
   display: flex;
   align-items: center;
@@ -733,6 +736,9 @@ h1 {
   height: 60vh;
   overflow: hidden;
   gap: 16px;
+  width: 1260px;
+  justify-content: center;
+  /* align-items: center; */
   margin-top: 18px;
 }
 
