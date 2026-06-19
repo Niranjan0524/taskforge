@@ -7,6 +7,7 @@ import (
 	"time"
 
 	storage "github.com/Niranjan0524/taskforge/server/internals/Storage"
+	"github.com/Niranjan0524/taskforge/server/internals/handlers/webSockets"
 )
 
 type WorkerPool struct {
@@ -22,12 +23,14 @@ func NewWorkerPool(store storage.Storage, workerSize int) *WorkerPool {
 }
 
 func (p *WorkerPool) Start(ctx context.Context) error {
+	webSockets.BroadcastWorkerStatus("started")
 	go p.runRecoveryWorker(ctx)
 
 	for i := 1; i <= p.workerSize; i++ {
 		go p.runWorker(ctx, i)
 	}
 	<-ctx.Done()
+	webSockets.BroadcastWorkerStatus("stopped")
 	return ctx.Err()
 }
 

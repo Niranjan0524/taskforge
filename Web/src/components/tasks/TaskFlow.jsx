@@ -15,6 +15,7 @@ import {
   buildQueueNodeData,
   createInitialQueueNodes,
   FLOW_EDGES,
+  FLOW_EDGES_RUNNING,
   groupTasksByStatus,
 } from './flowUtils'
 import './TaskFlow.css'
@@ -25,10 +26,11 @@ const nodeTypes = {
 
 const initialNodes = createInitialQueueNodes()
 
-function TaskFlow({ tasks = [] }) {
+function TaskFlow({ tasks = []  }) {
   const [selectedTask, setSelectedTask] = useState(null)
+  
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(FLOW_EDGES)
+  const [edges, setEdges, onEdgesChange] = useEdgesState(FLOW_EDGES_RUNNING)
 
   const handleTaskClick = useCallback((task) => {
     setSelectedTask(task)

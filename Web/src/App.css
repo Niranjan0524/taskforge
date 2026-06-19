@@ -1,5 +1,5 @@
 .app-shell {
-  --surface: rgba(252, 248, 216, 0.74);
+  --surface: rgba(252, 221, 216, 0.74);
   --surface-strong: rgba(217, 218, 223, 0.9);
   --line: rgba(124, 125, 117, 0.22);
   --line-strong: rgba(124, 125, 117, 0.38);
@@ -9,7 +9,7 @@
   --mint-strong: #a95508;
   --amber: #7c7d75;
   --ink: #191a16;
-  --cream: #fcf8d8;
+  --cream: #fcd8d8;
   --fog: #adaca7;
   --mist: #d9dadf;
   --olive: #7c7d75;
@@ -17,9 +17,9 @@
   min-height: 100vh;
   padding: 28px;
   background:
-    linear-gradient(135deg, rgba(252, 248, 216, 0.9), transparent 36%),
-    radial-gradient(circle at 86% 18%, rgba(221, 112, 11, 0.18), transparent 28%),
-    linear-gradient(180deg, #d9dadf 0%, #adaca7 100%);
+    linear-gradient(135deg, rgba(199, 199, 198, 0.9), transparent 36%),
+    radial-gradient(circle at 86% 18%, rgba(245, 127, 17, 0.18), transparent 28%),
+    linear-gradient(180deg, #e5f8fc 0%, rgb(249, 214, 139) 100%);
   color: var(--ink);
 }
 

@@ -41,6 +41,32 @@ export const FLOW_EDGES = [
     id: 'pending-running',
     source: 'pending',
     target: 'running',
+    animated: false,
+  },
+  {
+    id: 'running-completed',
+    source: 'running',
+    target: 'completed',
+    animated: false,
+  },
+  {
+    id: 'running-failed',
+    source: 'running',
+    target: 'failed',
+    animated: false,
+  },
+  {
+    id: 'running-cancelled',
+    source: 'running',
+    target: 'cancelled',
+    animated: false,
+  },
+]
+export const FLOW_EDGES_RUNNING = [
+  {
+    id: 'pending-running',
+    source: 'pending',
+    target: 'running',
     animated: true,
   },
   {

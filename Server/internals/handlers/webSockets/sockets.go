@@ -83,8 +83,16 @@ func (h *Hub) Run() {
 	}
 }
 
+type wsMeassage struct {
+	Type string      `json:"type"`
+	Data interface{} `json:"data"`
+}
 type TaskStatusMessage struct {
 	TaskID string `json:"taskId"`
+	Status string `json:"status"`
+}
+
+type WorkerStatusMessage struct {
 	Status string `json:"status"`
 }
 
@@ -94,10 +102,27 @@ func MarshalTaskStatus(taskID string, status string) ([]byte, error) {
 		Status: status,
 	}
 
-	return json.Marshal(msg)
+	wsMsg := wsMeassage{
+		Type: "taskUpdate",
+		Data: msg,
+	}
+	return json.Marshal(wsMsg)
+}
+
+func MarshalWorkerStatus(status string) ([]byte, error) {
+	data := WorkerStatusMessage{
+		Status: status,
+	}
+
+	wsMsg := wsMeassage{
+		Type: "workerStatus",
+		Data: data,
+	}
+	return json.Marshal(wsMsg)
 }
 
 func BroadcastRaw(data []byte) {
+
 	select {
 	case WsHub.Broadcast <- data:
 	default:
@@ -111,6 +136,18 @@ func BroadcastTaskStatus(
 ) {
 
 	data, err := MarshalTaskStatus(taskID, status)
+	if err != nil {
+		return
+	}
+
+	BroadcastRaw(data)
+}
+
+func BroadcastWorkerStatus(
+	status string,
+) {
+
+	data, err := MarshalWorkerStatus(status)
 	if err != nil {
 		return
 	}

@@ -53,6 +53,7 @@ function TaskList() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [activeTaskId, setActiveTaskId] = useState('')
+  const [workerRunning , setWorkerRunning] =useState(false);
 
   const taskCount = tasks.length
 
@@ -112,14 +113,25 @@ function TaskList() {
     }
 
     ws.onmessage=(event)=>{
-      const updatedData = JSON.parse(event.data);  // ← Parse the string to object
-      console.log(updatedData);
+      const res = JSON.parse(event.data);  
+      console.log(res);
 
-      updateTaskInList(updatedData.taskId, {status: updatedData.status})
-      setSelectedTask(null)
-      toast.success(`Task ${shortId(updatedData.taskId)} is ${updatedData.status}.`,{
-        position: "bottom-right"
-      })
+      if(res.type=="workerStatus"){
+        if (res.data.status === "started") {
+          toast.success("Worker started");
+        } else if (res.data.status === "stopped") {
+          toast.error("Worker stopped");
+        } else {
+          toast(`Worker status: ${res.data.status}`);
+        }
+      }
+      else{
+        updateTaskInList(res.data.taskId, {status: res.data.status})
+        setSelectedTask(null)
+        toast.success(`Task ${shortId(res.data.taskId)} is ${res.data.status}.`,{
+          position: "bottom-right"
+        })
+      }
     }
 
     ws.onclose = () => {
