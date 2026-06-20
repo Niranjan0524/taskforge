@@ -34,7 +34,7 @@ func main() {
 
 	store := redisStore.NewRedisStore(rdb)
 
-	workerPool := worker.NewWorkerPool(store, 2)
+	workerPool := worker.NewWorkerPool(store, 2, rdb)
 
 	log.Println("TaskForge worker started")
 

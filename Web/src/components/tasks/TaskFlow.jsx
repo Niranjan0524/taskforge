@@ -26,11 +26,11 @@ const nodeTypes = {
 
 const initialNodes = createInitialQueueNodes()
 
-function TaskFlow({ tasks = []  }) {
+function TaskFlow({ tasks = [] ,workerStatus }) {
   const [selectedTask, setSelectedTask] = useState(null)
   
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(FLOW_EDGES_RUNNING)
+  const [edges, setEdges, onEdgesChange] = useEdgesState(workerStatus?FLOW_EDGES_RUNNING:FLOW_EDGES)
 
   const handleTaskClick = useCallback((task) => {
     setSelectedTask(task)

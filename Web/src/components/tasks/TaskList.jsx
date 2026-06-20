@@ -117,13 +117,7 @@ function TaskList() {
       console.log(res);
 
       if(res.type=="workerStatus"){
-        if (res.data.status === "started") {
-          toast.success("Worker started");
-        } else if (res.data.status === "stopped") {
-          toast.error("Worker stopped");
-        } else {
-          toast(`Worker status: ${res.data.status}`);
-        }
+        setWorkerRunning(res.data.status=="started" ? true:false)
       }
       else{
         updateTaskInList(res.data.taskId, {status: res.data.status})
@@ -272,8 +266,15 @@ function TaskList() {
   
   return (<>
 
-      <TaskFlow tasks={tasks} />
-
+      <TaskFlow tasks={tasks} workerStatus={workerRunning}/>
+      <div
+      className={`fixed bottom-4 left-4 flex items-center gap-2 px-4 py-2 rounded-lg shadow-lg text-white ${
+        workerRunning ? "bg-green-600" : "bg-red-600"
+      }`}
+    >
+      <span className="h-3 w-3 rounded-full bg-white"></span>
+      <span>Worker {workerRunning ? "Running" : "Stopped"}</span>
+    </div>
     <div className="task-list-layout">
       
 

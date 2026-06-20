@@ -8,29 +8,43 @@ import (
 
 	storage "github.com/Niranjan0524/taskforge/server/internals/Storage"
 	"github.com/Niranjan0524/taskforge/server/internals/handlers/webSockets"
+	"github.com/redis/go-redis/v9"
 )
 
 type WorkerPool struct {
 	store      storage.Storage
 	workerSize int
+	redis      *redis.Client
 }
 
-func NewWorkerPool(store storage.Storage, workerSize int) *WorkerPool {
+func NewWorkerPool(store storage.Storage, workerSize int, redisClient *redis.Client) *WorkerPool {
 	return &WorkerPool{
 		store:      store,
 		workerSize: workerSize,
+		redis:      redisClient,
 	}
 }
 
 func (p *WorkerPool) Start(ctx context.Context) error {
-	webSockets.BroadcastWorkerStatus("started")
+
 	go p.runRecoveryWorker(ctx)
+	if err := webSockets.PublishWorkerStatus(ctx, p.redis, "started"); err != nil {
+		log.Println("error publishing worker started status:", err)
+	}
 
 	for i := 1; i <= p.workerSize; i++ {
 		go p.runWorker(ctx, i)
 	}
+
 	<-ctx.Done()
-	webSockets.BroadcastWorkerStatus("stopped")
+
+	stopCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := webSockets.PublishWorkerStatus(stopCtx, p.redis, "stopped"); err != nil {
+		log.Println("error publishing worker stopped status:", err)
+	}
+
 	return ctx.Err()
 }
 

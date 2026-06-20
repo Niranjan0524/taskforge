@@ -3,6 +3,7 @@ package webSockets
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -24,9 +25,10 @@ var upgrader = websocket.Upgrader{
 }
 
 type Hub struct {
-	Clients   map[*websocket.Conn]bool
-	Broadcast chan []byte
-	mu        sync.RWMutex
+	Clients          map[*websocket.Conn]bool
+	Broadcast        chan []byte
+	mu               sync.RWMutex
+	lastWorkerStatus string
 }
 
 var WsHub = &Hub{
@@ -48,7 +50,14 @@ func WebSocketHandler(c *gin.Context) {
 
 	WsHub.mu.Lock()
 	WsHub.Clients[conn] = true
+	status := WsHub.lastWorkerStatus
 	WsHub.mu.Unlock()
+
+	if status != "" {
+		if data, err := MarshalWorkerStatus(status); err == nil {
+			conn.WriteMessage(websocket.TextMessage, data)
+		}
+	}
 
 	for {
 		_, _, err := conn.ReadMessage()
@@ -122,12 +131,22 @@ func MarshalWorkerStatus(status string) ([]byte, error) {
 }
 
 func BroadcastRaw(data []byte) {
-
+	fmt.Println(" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
+	fmt.Println(WsHub.Broadcast)
+	fmt.Println(data)
 	select {
 	case WsHub.Broadcast <- data:
 	default:
 		log.Println("websocket broadcast channel full; dropping task status update")
 	}
+}
+
+func PublishWorkerStatus(ctx context.Context, client *redis.Client, status string) error {
+	data, err := MarshalWorkerStatus(status)
+	if err != nil {
+		return err
+	}
+	return client.Publish(ctx, TaskStatusChannel, data).Err()
 }
 
 func BroadcastTaskStatus(
@@ -151,7 +170,10 @@ func BroadcastWorkerStatus(
 	if err != nil {
 		return
 	}
-
+	fmt.Println("f-----------------------------")
+	WsHub.mu.Lock()
+	WsHub.lastWorkerStatus = status
+	WsHub.mu.Unlock()
 	BroadcastRaw(data)
 }
 
@@ -169,8 +191,22 @@ func StartTaskStatusSubscriber(ctx context.Context, client *redis.Client) {
 			if !ok {
 				return
 			}
+			payload := []byte(msg.Payload)
 
-			BroadcastRaw([]byte(msg.Payload))
+			// cache the latest worker status in THIS process's hub so any
+			// client that connects later still gets the current state
+			var envelope wsMeassage
+			if err := json.Unmarshal(payload, &envelope); err == nil && envelope.Type == "workerStatus" {
+				if dataMap, ok := envelope.Data.(map[string]interface{}); ok {
+					if status, ok := dataMap["status"].(string); ok {
+						WsHub.mu.Lock()
+						WsHub.lastWorkerStatus = status
+						WsHub.mu.Unlock()
+					}
+				}
+			}
+
+			BroadcastRaw(payload)
 		}
 	}
 }
