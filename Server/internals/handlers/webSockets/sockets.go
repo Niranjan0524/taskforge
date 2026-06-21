@@ -3,13 +3,13 @@ package webSockets
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 	"sync"
 
+	storage "github.com/Niranjan0524/taskforge/server/internals/Storage"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/redis/go-redis/v9"
@@ -97,18 +97,18 @@ type wsMeassage struct {
 	Data interface{} `json:"data"`
 }
 type TaskStatusMessage struct {
-	TaskID string `json:"taskId"`
-	Status string `json:"status"`
+	TaskID string       `json:"taskId"`
+	Task   storage.Task `json:"task"`
 }
 
 type WorkerStatusMessage struct {
 	Status string `json:"status"`
 }
 
-func MarshalTaskStatus(taskID string, status string) ([]byte, error) {
+func MarshalTaskStatus(taskID string, task storage.Task) ([]byte, error) {
 	msg := TaskStatusMessage{
 		TaskID: strings.TrimPrefix(taskID, "task:"),
-		Status: status,
+		Task:   task,
 	}
 
 	wsMsg := wsMeassage{
@@ -131,9 +131,7 @@ func MarshalWorkerStatus(status string) ([]byte, error) {
 }
 
 func BroadcastRaw(data []byte) {
-	fmt.Println(" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
-	fmt.Println(WsHub.Broadcast)
-	fmt.Println(data)
+
 	select {
 	case WsHub.Broadcast <- data:
 	default:
@@ -151,10 +149,10 @@ func PublishWorkerStatus(ctx context.Context, client *redis.Client, status strin
 
 func BroadcastTaskStatus(
 	taskID string,
-	status string,
+	task storage.Task,
 ) {
 
-	data, err := MarshalTaskStatus(taskID, status)
+	data, err := MarshalTaskStatus(taskID, task)
 	if err != nil {
 		return
 	}
@@ -170,7 +168,6 @@ func BroadcastWorkerStatus(
 	if err != nil {
 		return
 	}
-	fmt.Println("f-----------------------------")
 	WsHub.mu.Lock()
 	WsHub.lastWorkerStatus = status
 	WsHub.mu.Unlock()

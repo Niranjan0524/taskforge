@@ -236,7 +236,7 @@ func (r *redisStruct) UpdateTaskStatus(ctx context.Context, taskId string, statu
 	_, err = pipe.Exec(ctx)
 
 	if err == nil {
-		data, marshalErr := webSockets.MarshalTaskStatus(rawTaskId, status)
+		data, marshalErr := webSockets.MarshalTaskStatus(rawTaskId, task)
 		if marshalErr != nil {
 			return marshalErr
 		}
@@ -245,7 +245,7 @@ func (r *redisStruct) UpdateTaskStatus(ctx context.Context, taskId string, statu
 			fmt.Println("Error publishing task status", publishErr)
 		}
 
-		webSockets.BroadcastTaskStatus(rawTaskId, status)
+		webSockets.BroadcastTaskStatus(rawTaskId, task)
 	}
 	return err
 }
@@ -299,12 +299,13 @@ func (r *redisStruct) GetStaleTasks(ctx context.Context) ([]string, error) {
 
 	fiveMinutesAgo := time.Now().Add(-5 * time.Minute).Unix()
 
-	tasks, err := r.Client.ZRangeByScore(
+	tasks, err := r.Client.ZRangeArgs(
 		ctx,
-		"tasks:running",
-		&redis.ZRangeBy{
-			Min: "-inf",
-			Max: strconv.FormatInt(fiveMinutesAgo, 10),
+		redis.ZRangeArgs{
+			Key:     "tasks:running",
+			Start:   "-inf",
+			Stop:    strconv.FormatInt(fiveMinutesAgo, 10),
+			ByScore: true,
 		},
 	).Result()
 
@@ -317,7 +318,7 @@ func (r *redisStruct) GetStaleTasks(ctx context.Context) ([]string, error) {
 }
 func (r *redisStruct) MoveTaskToDeadQueue(ctx context.Context, taskId string) error {
 
-	err := r.UpdateTaskStatus(ctx, taskId, "Dead")
+	err := r.UpdateTaskStatus(ctx, taskId, "dead")
 
 	if err != nil {
 		fmt.Println("Failed to move task to dead queue", err)
@@ -367,7 +368,11 @@ func (r *redisStruct) Requeue(ctx context.Context, taskId string) error {
 		fmt.Println("Error in getting tasks from processing queue", err)
 		return err
 	}
-
+	statusErr := r.UpdateTaskStatus(ctx, task.ID, "pending")
+	if statusErr != nil {
+		fmt.Println("Task status update failed", statusErr)
+		return statusErr
+	}
 	priorityScore := float64(task.Priority)*1e13 - float64(time.Now().UnixMilli())
 	_, reqErr := r.Client.ZAdd(ctx, "queue:priority", redis.Z{Score: priorityScore, Member: task.ID}).Result()
 
@@ -375,11 +380,7 @@ func (r *redisStruct) Requeue(ctx context.Context, taskId string) error {
 		fmt.Println("Requeue Error", reqErr)
 		return reqErr
 	}
-	statusErr := r.UpdateTaskStatus(ctx, task.ID, "pending")
-	if statusErr != nil {
-		fmt.Println("Task status update failed", statusErr)
-		return statusErr
-	}
+
 	return nil
 }
 

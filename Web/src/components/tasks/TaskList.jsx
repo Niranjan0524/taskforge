@@ -24,6 +24,8 @@ const statusLabels = {
   completed: 'Completed',
   failed: 'Failed',
   cancelled:'Cancelled',
+  dead:"Dead",
+  Dead:"Dead",
 }
 
 function formatDate(value) {
@@ -120,9 +122,9 @@ function TaskList() {
         setWorkerRunning(res.data.status=="started" ? true:false)
       }
       else{
-        updateTaskInList(res.data.taskId, {status: res.data.status})
+        updateTaskInList(res.data.taskId, res.data.task)
         setSelectedTask(null)
-        toast.success(`Task ${shortId(res.data.taskId)} is ${res.data.status}.`,{
+        toast.success(`Task ${shortId(res.data.taskId)} is ${res.data.task.status}.`,{
           position: "bottom-right"
         })
       }

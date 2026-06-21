@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math/rand"
 	"time"
 
 	storage "github.com/Niranjan0524/taskforge/server/internals/Storage"
@@ -45,6 +46,11 @@ func ExecuteTask(store storage.Storage, ctx context.Context, task storage.Task) 
 	return nil
 }
 
+// this mimics the failing of the random task
+func shouldFail() bool {
+	return rand.Intn(100) < 5 // 5% chance
+}
+
 func checkIfCancelled(store storage.Storage, ctx context.Context, task storage.Task) (bool, error) {
 
 	for i := 0; i < 10; i++ {
@@ -57,6 +63,9 @@ func checkIfCancelled(store storage.Storage, ctx context.Context, task storage.T
 			return true, errors.New(CancelledTaskError)
 		}
 		time.Sleep(time.Second)
+	}
+	if shouldFail() {
+		return false, errors.New("email service unavailable")
 	}
 	fmt.Println("taskExecuted")
 	return false, nil
