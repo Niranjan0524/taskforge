@@ -266,7 +266,7 @@ function TaskList() {
   
   return (<>
 
-      <TaskFlow tasks={tasks} workerStatus={workerRunning}/>
+      <TaskFlow tasks={tasks} workerRunning={workerRunning}/>
       <div
       className={`fixed bottom-4 left-4 flex items-center gap-2 px-4 py-2 rounded-lg shadow-lg text-white ${
         workerRunning ? "bg-green-600" : "bg-red-600"

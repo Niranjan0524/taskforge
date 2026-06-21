@@ -19,7 +19,7 @@
   background:
     linear-gradient(135deg, rgba(199, 199, 198, 0.9), transparent 36%),
     radial-gradient(circle at 86% 18%, rgba(245, 127, 17, 0.18), transparent 28%),
-    linear-gradient(180deg, #e5f8fc 0%, rgb(249, 214, 139) 100%);
+    linear-gradient(180deg, #e5f8fc 0%, rgb(97, 97, 96) 100%);
   color: var(--ink);
 }
 

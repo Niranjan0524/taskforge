@@ -11,6 +11,7 @@ import {
   Workflow,
 } from 'lucide-react'
 import TopNav from '@/components/layout/TopNav'
+import Footer from '@/components/Footer'
 
 const actions = [
   {
@@ -55,6 +56,7 @@ const workflow = [
 
 function HomePage() {
   return (
+    <>
     <section className="app-shell">
       <TopNav />
 
@@ -177,7 +179,12 @@ function HomePage() {
           })}
         </div>
       </section>
+       <section>
+          <Footer></Footer>
     </section>
+    </section>
+   
+    </>
   )
 }
 
