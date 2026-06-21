@@ -64,9 +64,9 @@ func checkIfCancelled(store storage.Storage, ctx context.Context, task storage.T
 		}
 		time.Sleep(time.Second)
 	}
-	if shouldFail() {
-		return false, errors.New("email service unavailable")
-	}
+	// if shouldFail() {
+	// 	return false, errors.New("email service unavailable")
+	// }
 	fmt.Println("taskExecuted")
 	return false, nil
 }

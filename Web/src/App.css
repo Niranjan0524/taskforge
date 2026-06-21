@@ -896,12 +896,8 @@ h1 {
   color:#009d98;
 }
 .status-badge.dead {
-  border-color: #eb0445;
-  color:#ebf2f2;
-}
-.status-badge.Dead {
-  border-color: #fe7f00;
-  color:#fe9d00;
+  border-color: #ff7300;
+  color:#f06400;
 }
 
 .table-actions {

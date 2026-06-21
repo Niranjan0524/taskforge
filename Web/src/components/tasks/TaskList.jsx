@@ -25,7 +25,6 @@ const statusLabels = {
   failed: 'Failed',
   cancelled:'Cancelled',
   dead:"Dead",
-  Dead:"Dead",
 }
 
 function formatDate(value) {

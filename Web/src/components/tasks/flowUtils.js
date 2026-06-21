@@ -1,4 +1,4 @@
-export const FLOW_STATUSES = ['pending', 'running', 'completed', 'failed', 'cancelled']
+export const FLOW_STATUSES = ['pending', 'running', 'completed', 'failed', 'cancelled','dead']
 
 export const FLOW_STATUS_META = {
   pending: {
@@ -21,6 +21,11 @@ export const FLOW_STATUS_META = {
     accent: '#ff6b6b',
     tint: 'rgba(255, 107, 107, 0.14)',
   },
+  dead: {
+    label: 'dead',
+    accent: '#ffe66b',
+    tint: 'rgba(255, 107, 107, 0.14)',
+  },
   cancelled: {
     label: 'Cancelled',
     accent: '#98a2b3',
@@ -29,11 +34,12 @@ export const FLOW_STATUS_META = {
 }
 
 export const FLOW_NODE_POSITIONS = {
-  pending: { x: -300, y: 0 },
+  pending: { x: -400, y: 0 },
   running: { x: 0, y: 200 },
   completed: { x: 600, y: -310 },
   failed: { x: 1000, y: 200 },
   cancelled: { x: 600, y: 310 },
+  dead: { x: 1000, y: 400 },
 }
 
 export const FLOW_EDGES = [
@@ -53,6 +59,12 @@ export const FLOW_EDGES = [
     id: 'running-failed',
     source: 'running',
     target: 'failed',
+    animated: false,
+  },
+  {
+    id: 'running-dead',
+    source: 'failed',
+    target: 'dead',
     animated: false,
   },
   {
@@ -87,6 +99,12 @@ export const FLOW_EDGES_RUNNING = [
     target: 'cancelled',
     animated: true,
   },
+  {
+    id: 'running-dead',
+    source: 'failed',
+    target: 'dead',
+    animated: true,
+  },
 ]
 
 export function normalizeTaskStatus(status) {
@@ -118,6 +136,7 @@ export function groupTasksByStatus(tasks = []) {
       completed: [],
       failed: [],
       cancelled: [],
+      dead:[],
     },
   )
 }
