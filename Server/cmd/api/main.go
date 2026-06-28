@@ -12,6 +12,7 @@ import (
 	"github.com/Niranjan0524/taskforge/server/internals/config"
 	"github.com/Niranjan0524/taskforge/server/internals/handlers"
 	"github.com/Niranjan0524/taskforge/server/internals/handlers/webSockets"
+	"github.com/Niranjan0524/taskforge/server/internals/worker"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/redis/go-redis/v9"
@@ -45,6 +46,12 @@ func main() {
 
 	log.Println("Connected to redis")
 	go webSockets.StartTaskStatusSubscriber(ctx, rdb)
+	workerPool := worker.NewWorkerPool(store, 2, rdb)
+	go func() {
+		if err := workerPool.Start(ctx); err != nil {
+			log.Println("worker stopped:", err)
+		}
+	}()
 
 	router.GET("/test", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
