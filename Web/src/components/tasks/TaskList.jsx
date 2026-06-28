@@ -18,6 +18,13 @@ import {
 } from '@/api/tasks'
 import TaskFlow from './TaskFlow'
 
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || ''
+const WS_URL =
+  import.meta.env.VITE_WS_URL ||
+  (API_BASE_URL
+    ? `${API_BASE_URL.replace(/^http/, 'ws').replace(/\/$/, '')}/ws`
+    : 'ws://localhost:8080/ws')
+
 const statusLabels = {
   pending: 'Pending',
   running: 'Running',
@@ -107,7 +114,7 @@ function TaskList() {
 
     loadInitialTasks()
 
-    const ws=new WebSocket("ws://localhost:8080/ws")
+    const ws=new WebSocket(WS_URL)
 
     ws.onopen=()=>{
       console.log("Connected");

@@ -4,7 +4,7 @@ import { Toaster } from 'react-hot-toast'
 import CreateTaskPage from '@/pages/CreateTaskPage'
 import DashboardPage from '@/pages/DashboardPage'
 import HomePage from '@/pages/HomePage'
-import { Test } from './components/test'
+import { Test } from './components/Test'
 function getRouteFromHash() {
   return window.location.hash.replace('#', '') || 'home'
 }

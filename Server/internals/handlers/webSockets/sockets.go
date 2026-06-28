@@ -20,7 +20,20 @@ const TaskStatusChannel = "tasks:status"
 var upgrader = websocket.Upgrader{
 
 	CheckOrigin: func(r *http.Request) bool {
-		return r.Header.Get("Origin") == os.Getenv("ORIGIN_URL")
+		allowedOrigins := os.Getenv("ORIGIN_URL")
+		origin := r.Header.Get("Origin")
+
+		if allowedOrigins == "" || origin == "" {
+			return true
+		}
+
+		for _, allowed := range strings.Split(allowedOrigins, ",") {
+			if strings.TrimSpace(allowed) == origin {
+				return true
+			}
+		}
+
+		return false
 	},
 }
 

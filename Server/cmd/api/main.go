@@ -6,8 +6,10 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/Niranjan0524/taskforge/server/internals/Storage/redisStore"
+	"github.com/Niranjan0524/taskforge/server/internals/config"
 	"github.com/Niranjan0524/taskforge/server/internals/handlers"
 	"github.com/Niranjan0524/taskforge/server/internals/handlers/webSockets"
 	"github.com/gin-gonic/gin"
@@ -24,20 +26,17 @@ func main() {
 	router := gin.New()
 
 	router.Use(gin.Logger())
+	router.Use(corsMiddleware())
 	// router.Use(gin.Recovery())
 
 	fmt.Println("API server")
 
 	ctx := context.Background()
-	redisAddr := os.Getenv("REDIS_ADDR")
-	if redisAddr == "" {
-		redisAddr = "localhost:6379"
+	redisOptions, err := config.RedisOptionsFromEnv()
+	if err != nil {
+		log.Fatal("Invalid redis config", err)
 	}
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     redisAddr,
-		Password: "",
-		DB:       0,
-	})
+	rdb := redis.NewClient(redisOptions)
 	store := redisStore.NewRedisStore(rdb)
 
 	if err := rdb.Ping(ctx).Err(); err != nil {
@@ -64,7 +63,48 @@ func main() {
 	authorized.DELETE("/api/tasks/cancel/:id", handlers.CancelTask(store))
 	router.GET("/ws", webSockets.WebSocketHandler)
 
-	if err := router.Run(); err != nil {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	if err := router.Run("0.0.0.0:" + port); err != nil {
 		log.Fatalf("failed to run server: %v", err)
 	}
+}
+
+func corsMiddleware() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		origin := ctx.Request.Header.Get("Origin")
+		allowedOrigin := os.Getenv("ORIGIN_URL")
+
+		if allowedOrigin == "" || originAllowed(origin, allowedOrigin) {
+			ctx.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+			ctx.Writer.Header().Set("Vary", "Origin")
+		}
+
+		ctx.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
+		ctx.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if ctx.Request.Method == http.MethodOptions {
+			ctx.AbortWithStatus(http.StatusNoContent)
+			return
+		}
+
+		ctx.Next()
+	}
+}
+
+func originAllowed(origin string, allowedOrigins string) bool {
+	if origin == "" {
+		return true
+	}
+
+	for _, allowed := range strings.Split(allowedOrigins, ",") {
+		if strings.TrimSpace(allowed) == origin {
+			return true
+		}
+	}
+
+	return false
 }

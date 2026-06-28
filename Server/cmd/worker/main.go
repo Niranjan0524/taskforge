@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/Niranjan0524/taskforge/server/internals/Storage/redisStore"
+	"github.com/Niranjan0524/taskforge/server/internals/config"
 	"github.com/Niranjan0524/taskforge/server/internals/worker"
 	"github.com/joho/godotenv"
 	"github.com/redis/go-redis/v9"
@@ -22,14 +23,12 @@ func main() {
 		log.Println("No .env file found")
 	}
 
-	redisAddr := os.Getenv("REDIS_ADDR")
-	if redisAddr == "" {
-		redisAddr = "localhost:6379"
+	redisOptions, err := config.RedisOptionsFromEnv()
+	if err != nil {
+		log.Fatal("Invalid redis config", err)
 	}
 
-	rdb := redis.NewClient(&redis.Options{
-		Addr: redisAddr,
-	})
+	rdb := redis.NewClient(redisOptions)
 	defer rdb.Close()
 
 	store := redisStore.NewRedisStore(rdb)
