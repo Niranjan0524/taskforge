@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/Niranjan0524/taskforge/server/internals/Storage/redisStore"
 	"github.com/Niranjan0524/taskforge/server/internals/config"
@@ -83,9 +82,8 @@ func main() {
 func corsMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		origin := ctx.Request.Header.Get("Origin")
-		allowedOrigin := os.Getenv("ORIGIN_URL")
 
-		if allowedOrigin == "" || originAllowed(origin, allowedOrigin) {
+		if config.OriginAllowed(origin) {
 			ctx.Writer.Header().Set("Access-Control-Allow-Origin", origin)
 			ctx.Writer.Header().Set("Vary", "Origin")
 		}
@@ -100,18 +98,4 @@ func corsMiddleware() gin.HandlerFunc {
 
 		ctx.Next()
 	}
-}
-
-func originAllowed(origin string, allowedOrigins string) bool {
-	if origin == "" {
-		return true
-	}
-
-	for _, allowed := range strings.Split(allowedOrigins, ",") {
-		if strings.TrimSpace(allowed) == origin {
-			return true
-		}
-	}
-
-	return false
 }

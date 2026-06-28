@@ -62,6 +62,12 @@ const Footer=()=>{
           >
             GitHub
           </a>
+          <a
+            href="https://github.com/Niranjan0524/taskforge"
+            className="px-4 py-2 rounded-full backdrop-blur-md bg-white/40 border border-black/10 hover:border-orange-500/40 hover:bg-orange-500/10 transition"
+          >
+            Source Code
+          </a>
 
           <a
             href="www.linkedin.com/in/niranjan05"

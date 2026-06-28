@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 	"sync"
 
 	storage "github.com/Niranjan0524/taskforge/server/internals/Storage"
+	"github.com/Niranjan0524/taskforge/server/internals/config"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/redis/go-redis/v9"
@@ -20,20 +20,7 @@ const TaskStatusChannel = "tasks:status"
 var upgrader = websocket.Upgrader{
 
 	CheckOrigin: func(r *http.Request) bool {
-		allowedOrigins := os.Getenv("ORIGIN_URL")
-		origin := r.Header.Get("Origin")
-
-		if allowedOrigins == "" || origin == "" {
-			return true
-		}
-
-		for _, allowed := range strings.Split(allowedOrigins, ",") {
-			if strings.TrimSpace(allowed) == origin {
-				return true
-			}
-		}
-
-		return false
+		return config.OriginAllowed(r.Header.Get("Origin"))
 	},
 }
 
